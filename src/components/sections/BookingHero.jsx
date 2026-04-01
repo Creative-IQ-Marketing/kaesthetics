@@ -23,8 +23,8 @@ const BookingHero = () => {
             Book Your Glow
           </h1>
           <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Simple, seamless booking for radiant results. Select your preferred
-            service and time below.
+            Choose your treatment here, then finish inside our secure live
+            calendar for the most reliable booking experience.
           </p>
         </motion.div>
       </div>

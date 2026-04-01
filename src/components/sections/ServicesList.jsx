@@ -17,7 +17,7 @@ const servicesData = {
   "skin-treatments": [
     {
       title: "Nano Infusion",
-      price: "$150",
+      price: "$180",
       description:
         "A non-invasive treatment that creates micro pathways infusing active ingredients to pass through the layer of dead epidermal cells enhancing the skin's capability for nutrient absorption. Skin is lighter, brighter, and tighter.",
     },

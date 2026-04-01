@@ -2,16 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Calendar,
-  Clock,
-  User,
-  Mail,
   Phone,
   CheckCircle,
   Sparkles,
   Flower,
   Droplet,
   ChevronRight,
+  ExternalLink,
 } from "lucide-react";
 
 const categories = [
@@ -26,7 +23,7 @@ const categories = [
 
 const servicesData = {
   "skin-treatments": [
-    { title: "Nano Infusion", price: "$150" },
+    { title: "Nano Infusion", price: "$180" },
     { title: "Dermaplaning", price: "$85" },
     { title: "Microneedling", price: "$530", sub: "(3 Sessions)" },
     { title: "Oil Planing", price: "$95" },
@@ -64,24 +61,18 @@ const servicesData = {
 };
 
 const BookingFormSection = () => {
+  const GHL_BOOKING_URL = import.meta.env.VITE_GHL_BOOKING_URL || "";
   const location = useLocation();
   const [step, setStep] = useState(1);
   const [activeCategory, setActiveCategory] = useState("skin-treatments");
   const [formData, setFormData] = useState({
     service: "",
     price: "",
-    date: "",
-    time: "",
-    name: "",
-    email: "",
-    phone: "",
   });
 
-  // Pre-fill service if passed from another page
   useEffect(() => {
     if (location.state?.serviceName) {
       const serviceName = location.state.serviceName;
-      // Find the category and price for this service
       let foundCategory = "skin-treatments";
       let foundPrice = "";
 
@@ -102,11 +93,6 @@ const BookingFormSection = () => {
     }
   }, [location.state]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleServiceSelect = (service) => {
     setFormData((prev) => ({
       ...prev,
@@ -117,15 +103,6 @@ const BookingFormSection = () => {
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Simulate submission
-    setTimeout(() => {
-      setStep(4); // Success step
-    }, 1500);
-    nextStep(); // Go to loading/processing
-  };
 
   return (
     <section className="py-20 bg-white relative">
@@ -142,7 +119,7 @@ const BookingFormSection = () => {
               <div>
                 <h3 className="font-serif text-2xl mb-8">Your Journey</h3>
                 <div className="space-y-6">
-                  {[1, 2, 3].map((s) => (
+                  {[1, 2].map((s) => (
                     <div
                       key={s}
                       className={`flex items-center gap-4 ${step >= s ? "opacity-100" : "opacity-40"} transition-opacity duration-300`}
@@ -153,11 +130,7 @@ const BookingFormSection = () => {
                         {step > s ? <CheckCircle className="w-4 h-4" /> : s}
                       </div>
                       <span className="text-sm font-medium tracking-wide uppercase">
-                        {s === 1
-                          ? "Service & Time"
-                          : s === 2
-                            ? "Your Details"
-                            : "Confirmation"}
+                        {s === 1 ? "Choose Treatment" : "Secure Booking"}
                       </span>
                     </div>
                   ))}
@@ -191,7 +164,6 @@ const BookingFormSection = () => {
                     </h2>
 
                     <div className="space-y-8 flex-grow">
-                      {/* Category Tabs */}
                       <div>
                         <label className="block text-sm font-medium text-gray-500 mb-4 uppercase tracking-wide">
                           Select Service Category
@@ -214,7 +186,6 @@ const BookingFormSection = () => {
                         </div>
                       </div>
 
-                      {/* Service Selection */}
                       <div>
                         <label className="block text-sm font-medium text-gray-500 mb-4 uppercase tracking-wide">
                           Choose Treatment
@@ -256,56 +227,23 @@ const BookingFormSection = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-6 pt-4 border-t border-gray-100">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                            Date
-                          </label>
-                          <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <input
-                              type="date"
-                              name="date"
-                              value={formData.date}
-                              onChange={handleChange}
-                              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-ka-accent focus:border-transparent outline-none transition-all"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                            Time
-                          </label>
-                          <div className="relative">
-                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <select
-                              name="time"
-                              value={formData.time}
-                              onChange={handleChange}
-                              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-ka-accent focus:border-transparent outline-none transition-all"
-                            >
-                              <option value="">Select time...</option>
-                              <option value="09:00">09:00 AM</option>
-                              <option value="10:00">10:00 AM</option>
-                              <option value="11:00">11:00 AM</option>
-                              <option value="13:00">01:00 PM</option>
-                              <option value="14:00">02:00 PM</option>
-                              <option value="15:00">03:00 PM</option>
-                              <option value="16:00">04:00 PM</option>
-                            </select>
-                          </div>
-                        </div>
+                      <div className="rounded-2xl border border-ka-accent/15 bg-ka-accent/5 p-5">
+                        <span className="text-xs uppercase tracking-[0.2em] text-ka-accent font-semibold block mb-2">
+                          Booking
+                        </span>
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                          Select your treatment here, then continue to the live
+                          calendar to choose your date and time.
+                        </p>
                       </div>
                     </div>
 
                     <button
                       onClick={nextStep}
-                      disabled={
-                        !formData.service || !formData.date || !formData.time
-                      }
+                      disabled={!formData.service}
                       className="mt-8 w-full bg-ka-primary text-white py-4 rounded-full font-medium hover:bg-ka-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Continue to Details
+                      Continue to Secure Booking
                     </button>
                   </motion.div>
                 )}
@@ -320,121 +258,92 @@ const BookingFormSection = () => {
                     className="h-full flex flex-col"
                   >
                     <h2 className="font-serif text-3xl text-ka-primary mb-8">
-                      Your Details
+                      Complete Your Booking
                     </h2>
 
                     <div className="space-y-6 flex-grow">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                          Full Name
-                        </label>
-                        <div className="relative">
-                          <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                          <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            placeholder="Jane Doe"
-                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-ka-accent focus:border-transparent outline-none transition-all"
-                          />
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div className="rounded-2xl bg-ka-primary text-white p-5">
+                          <span className="text-xs uppercase tracking-[0.2em] text-white/60 block mb-2">
+                            Selected Service
+                          </span>
+                          <p className="font-serif text-2xl">{formData.service}</p>
+                          <p className="text-ka-accent font-semibold mt-2">
+                            {formData.price}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl border border-gray-200 p-5">
+                          <span className="text-xs uppercase tracking-[0.2em] text-gray-500 block mb-2">
+                            Next Step
+                          </span>
+                          <p className="text-sm text-gray-600 leading-relaxed">
+                            Open the calendar below and search for your service.
+                            If you do not see it, choose <strong>Other</strong>{" "}
+                            and enter <strong>{formData.service}</strong> with a
+                            short description in the additional notes field on
+                            the form.
+                          </p>
                         </div>
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                          Email Address
-                        </label>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                          <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="jane@example.com"
-                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-ka-accent focus:border-transparent outline-none transition-all"
-                          />
+                      {GHL_BOOKING_URL ? (
+                        <div className="space-y-4">
+                          <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+                            <iframe
+                              src={GHL_BOOKING_URL}
+                              title="K-Aesthetic secure booking calendar"
+                              className="w-full h-[700px]"
+                            />
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            If the calendar does not load here, open it directly
+                            or call us and we will help you book.
+                          </p>
                         </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                          Phone Number
-                        </label>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                          <input
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            placeholder="(555) 123-4567"
-                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-ka-accent focus:border-transparent outline-none transition-all"
-                          />
+                      ) : (
+                        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+                          <p className="text-sm text-amber-800 leading-relaxed">
+                            The booking calendar is not available right now.
+                            Please call us to schedule your appointment.
+                          </p>
                         </div>
-                      </div>
+                      )}
                     </div>
 
-                    <div className="flex gap-4 mt-8">
+                    <div className="flex flex-col sm:flex-row gap-4 mt-8">
                       <button
                         onClick={prevStep}
-                        className="px-8 py-4 border border-gray-300 rounded-full font-medium hover:bg-gray-50 transition-colors"
+                        className="px-8 py-4 border border-gray-300 rounded-full font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Back
                       </button>
-                      <button
-                        onClick={handleSubmit}
-                        disabled={
-                          !formData.name || !formData.email || !formData.phone
-                        }
-                        className="flex-grow bg-ka-primary text-white py-4 rounded-full font-medium hover:bg-ka-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      <a
+                        href={GHL_BOOKING_URL || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex-grow inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-medium transition-colors ${
+                          GHL_BOOKING_URL
+                            ? "bg-ka-primary text-white hover:bg-ka-accent"
+                            : "bg-gray-200 text-gray-500 pointer-events-none"
+                        }`}
                       >
-                        Confirm Booking
-                      </button>
+                        Open Secure Calendar
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                      <a
+                        href="tel:3614948656"
+                        className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-gray-300 rounded-full font-medium hover:bg-gray-50 transition-colors"
+                      >
+                        Call to Book
+                        <Phone className="w-4 h-4" />
+                      </a>
                     </div>
-                  </motion.div>
-                )}
-
-                {step === 3 && (
-                  <motion.div
-                    key="step3"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="h-full flex flex-col items-center justify-center text-center"
-                  >
-                    <div className="w-16 h-16 border-4 border-ka-accent border-t-transparent rounded-full animate-spin mb-6" />
-                    <p className="text-gray-500 font-medium">
-                      Processing your request...
-                    </p>
-                  </motion.div>
-                )}
-
-                {step === 4 && (
-                  <motion.div
-                    key="step4"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="h-full flex flex-col items-center justify-center text-center"
-                  >
-                    <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-8">
-                      <Sparkles className="w-12 h-12 text-green-600" />
+                    <div className="mt-6 rounded-2xl bg-[#FBF6F0] border border-ka-accent/15 p-5">
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        Need help choosing a time? Call us and we’ll get you
+                        booked.
+                      </p>
                     </div>
-                    <h2 className="font-serif text-3xl text-ka-primary mb-4">
-                      Booking Confirmed!
-                    </h2>
-                    <p className="text-gray-600 max-w-md mb-8">
-                      Thank you, {formData.name}. Your appointment for{" "}
-                      <strong>{formData.service}</strong> on{" "}
-                      <strong>{formData.date}</strong> at{" "}
-                      <strong>{formData.time}</strong> has been scheduled.
-                    </p>
-                    <button
-                      onClick={() => (window.location.href = "/")}
-                      className="px-8 py-3 bg-ka-primary text-white rounded-full hover:bg-ka-accent transition-colors"
-                    >
-                      Return Home
-                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
