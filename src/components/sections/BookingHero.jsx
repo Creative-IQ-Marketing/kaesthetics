@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+const MotionDiv = motion.div;
+
 const BookingHero = () => {
   return (
     <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden bg-[#F5EFE6]">
@@ -11,7 +13,7 @@ const BookingHero = () => {
       </div>
 
       <div className="container-custom relative z-10 text-center">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -26,7 +28,7 @@ const BookingHero = () => {
             Choose your treatment here, then finish inside our secure live
             calendar for the most reliable booking experience.
           </p>
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );

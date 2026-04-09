@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Phone,
   CheckCircle,
-  Sparkles,
+  Leaf,
   Flower,
   Droplet,
-  ChevronRight,
   ExternalLink,
 } from "lucide-react";
+
+const MotionDiv = motion.div;
 
 const categories = [
   {
     id: "skin-treatments",
     label: "Skin Treatments",
-    icon: <Sparkles className="w-4 h-4" />,
+    icon: <Leaf className="w-4 h-4" />,
   },
   { id: "facials", label: "Facials", icon: <Flower className="w-4 h-4" /> },
   { id: "waxing", label: "Waxing", icon: <Droplet className="w-4 h-4" /> },
@@ -63,46 +64,69 @@ const servicesData = {
 const BookingFormSection = () => {
   const GHL_BOOKING_URL = import.meta.env.VITE_GHL_BOOKING_URL || "";
   const location = useLocation();
-  const [step, setStep] = useState(1);
-  const [activeCategory, setActiveCategory] = useState("skin-treatments");
-  const [formData, setFormData] = useState({
-    service: "",
-    price: "",
-  });
-
-  useEffect(() => {
-    if (location.state?.serviceName) {
-      const serviceName = location.state.serviceName;
-      let foundCategory = "skin-treatments";
-      let foundPrice = "";
-
-      Object.entries(servicesData).forEach(([cat, services]) => {
-        const service = services.find((s) => s.title === serviceName);
-        if (service) {
-          foundCategory = cat;
-          foundPrice = service.price;
-        }
-      });
-
-      setActiveCategory(foundCategory);
-      setFormData((prev) => ({
-        ...prev,
-        service: serviceName,
-        price: foundPrice,
-      }));
+  const initialSelection = (() => {
+    const serviceName = location.state?.serviceName;
+    if (!serviceName) {
+      return { category: "skin-treatments", services: [] };
     }
-  }, [location.state]);
+
+    let foundCategory = "skin-treatments";
+    let foundService = null;
+
+    Object.entries(servicesData).forEach(([cat, services]) => {
+      const service = services.find((s) => s.title === serviceName);
+      if (service) {
+        foundCategory = cat;
+        foundService = service;
+      }
+    });
+
+    return {
+      category: foundCategory,
+      services: foundService ? [foundService] : [],
+    };
+  })();
+  const [step, setStep] = useState(1);
+  const [activeCategory, setActiveCategory] = useState(
+    initialSelection.category,
+  );
+  const [formData, setFormData] = useState({
+    services: initialSelection.services,
+  });
 
   const handleServiceSelect = (service) => {
     setFormData((prev) => ({
       ...prev,
-      service: service.title,
-      price: service.price,
+      services: prev.services.some((s) => s.title === service.title)
+        ? prev.services.filter((s) => s.title !== service.title)
+        : [...prev.services, service],
     }));
   };
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
+
+  const parsePriceValue = (raw) => {
+    if (!raw) return null;
+    const match = String(raw).match(/[\d,.]+/);
+    if (!match) return null;
+    const value = Number(match[0].replace(/,/g, ""));
+    return Number.isFinite(value) ? value : null;
+  };
+
+  const selectedServicesText =
+    formData.services.length > 0
+      ? formData.services.map((s) => s.title).join(", ")
+      : "";
+
+  const totalValue = formData.services.reduce((sum, s) => {
+    const v = parsePriceValue(s.price);
+    return v == null ? sum : sum + v;
+  }, 0);
+  const hasAnyPrice = formData.services.some(
+    (s) => parsePriceValue(s.price) != null,
+  );
+  const totalText = hasAnyPrice ? `$${Math.round(totalValue)}` : "—";
 
   return (
     <section className="py-20 bg-white relative">
@@ -137,12 +161,31 @@ const BookingFormSection = () => {
                 </div>
               </div>
 
-              {formData.service && (
+              {formData.services.length > 0 && (
                 <div className="mt-12 bg-white/10 p-4 rounded-xl backdrop-blur-sm">
                   <span className="text-ka-accent text-xs uppercase tracking-wider font-bold block mb-1">
-                    Selected Service
+                    {formData.services.length === 1
+                      ? "Selected Service"
+                      : "Selected Services"}
                   </span>
-                  <p className="font-serif text-lg">{formData.service}</p>
+                  <div className="space-y-2">
+                    {formData.services.slice(0, 3).map((s) => (
+                      <div
+                        key={s.title}
+                        className="flex items-baseline justify-between gap-3"
+                      >
+                        <p className="font-serif text-lg">{s.title}</p>
+                        <span className="text-sm text-ka-accent font-semibold">
+                          {s.price}
+                        </span>
+                      </div>
+                    ))}
+                    {formData.services.length > 3 && (
+                      <span className="text-xs text-white/70">
+                        +{formData.services.length - 3} more
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -151,7 +194,7 @@ const BookingFormSection = () => {
             <div className="md:col-span-2 p-8 md:p-12 relative">
               <AnimatePresence mode="wait">
                 {step === 1 && (
-                  <motion.div
+                  <MotionDiv
                     key="step1"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -188,7 +231,7 @@ const BookingFormSection = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-500 mb-4 uppercase tracking-wide">
-                          Choose Treatment
+                          Choose Treatment (You can select more than one)
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                           {servicesData[activeCategory].map(
@@ -197,27 +240,47 @@ const BookingFormSection = () => {
                                 key={index}
                                 onClick={() => handleServiceSelect(service)}
                                 className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer flex justify-between items-center group ${
-                                  formData.service === service.title
+                                  formData.services.some(
+                                    (s) => s.title === service.title,
+                                  )
                                     ? "bg-ka-primary text-white border-ka-primary shadow-lg ring-2 ring-ka-accent ring-offset-2"
                                     : "bg-white border-gray-100 hover:border-ka-accent/50 hover:shadow-md"
                                 }`}
                               >
                                 <div>
                                   <h4
-                                    className={`font-serif text-lg ${formData.service === service.title ? "text-white" : "text-ka-primary"}`}
+                                    className={`font-serif text-lg ${
+                                      formData.services.some(
+                                        (s) => s.title === service.title,
+                                      )
+                                        ? "text-white"
+                                        : "text-ka-primary"
+                                    }`}
                                   >
                                     {service.title}
                                   </h4>
                                   {service.sub && (
                                     <span
-                                      className={`text-xs block ${formData.service === service.title ? "text-gray-300" : "text-gray-400"}`}
+                                      className={`text-xs block ${
+                                        formData.services.some(
+                                          (s) => s.title === service.title,
+                                        )
+                                          ? "text-gray-300"
+                                          : "text-gray-400"
+                                      }`}
                                     >
                                       {service.sub}
                                     </span>
                                   )}
                                 </div>
                                 <span
-                                  className={`text-sm font-bold ${formData.service === service.title ? "text-ka-accent" : "text-ka-primary"}`}
+                                  className={`text-sm font-bold ${
+                                    formData.services.some(
+                                      (s) => s.title === service.title,
+                                    )
+                                      ? "text-ka-accent"
+                                      : "text-ka-primary"
+                                  }`}
                                 >
                                   {service.price}
                                 </span>
@@ -232,24 +295,24 @@ const BookingFormSection = () => {
                           Booking
                         </span>
                         <p className="text-sm text-gray-600 leading-relaxed">
-                          Select your treatment here, then continue to the live
-                          calendar to choose your date and time.
+                          Select one or more treatments here, then continue to
+                          the live calendar to choose your date and time.
                         </p>
                       </div>
                     </div>
 
                     <button
                       onClick={nextStep}
-                      disabled={!formData.service}
+                      disabled={formData.services.length === 0}
                       className="mt-8 w-full bg-ka-primary text-white py-4 rounded-full font-medium hover:bg-ka-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Continue to Secure Booking
                     </button>
-                  </motion.div>
+                  </MotionDiv>
                 )}
 
                 {step === 2 && (
-                  <motion.div
+                  <MotionDiv
                     key="step2"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -265,24 +328,63 @@ const BookingFormSection = () => {
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div className="rounded-2xl bg-ka-primary text-white p-5">
                           <span className="text-xs uppercase tracking-[0.2em] text-white/60 block mb-2">
-                            Selected Service
+                            {formData.services.length === 1
+                              ? "Selected Service"
+                              : "Selected Services"}
                           </span>
-                          <p className="font-serif text-2xl">{formData.service}</p>
-                          <p className="text-ka-accent font-semibold mt-2">
-                            {formData.price}
-                          </p>
+                          <div className="space-y-3">
+                            {formData.services.map((s) => (
+                              <div
+                                key={s.title}
+                                className="flex items-baseline justify-between gap-3"
+                              >
+                                <p className="font-serif text-xl">{s.title}</p>
+                                <span className="text-ka-accent font-semibold">
+                                  {s.price}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="mt-5 pt-4 border-t border-white/15 flex items-center justify-between gap-3">
+                            <span className="text-xs uppercase tracking-[0.2em] text-white/60">
+                              Total
+                            </span>
+                            <span className="text-xl font-semibold text-ka-accent">
+                              {totalText}
+                            </span>
+                          </div>
                         </div>
                         <div className="rounded-2xl border border-gray-200 p-5">
                           <span className="text-xs uppercase tracking-[0.2em] text-gray-500 block mb-2">
-                            Next Step
+                            Instructions
                           </span>
-                          <p className="text-sm text-gray-600 leading-relaxed">
-                            Open the calendar below and search for your service.
-                            If you do not see it, choose <strong>Other</strong>{" "}
-                            and enter <strong>{formData.service}</strong> with a
-                            short description in the additional notes field on
-                            the form.
-                          </p>
+                          {formData.services.length === 1 ? (
+                            <div className="text-sm text-gray-600 leading-relaxed space-y-3">
+                              <p>
+                                Open the calendar below and search for{" "}
+                                <strong>{formData.services[0]?.title}</strong>.
+                              </p>
+                              <ul className="list-disc pl-5 space-y-1">
+                                <li>Select the service and choose your date and time.</li>
+                                <li>Complete the form and confirm your booking.</li>
+                              </ul>
+                            </div>
+                          ) : (
+                            <div className="text-sm text-gray-600 leading-relaxed space-y-3">
+                              <p>
+                                Open the calendar below, search for{" "}
+                                <strong>Other</strong>, and book that option.
+                              </p>
+                              <ul className="list-disc pl-5 space-y-1">
+                                <li>
+                                  In additional notes, enter{" "}
+                                  <strong>{selectedServicesText}</strong>.
+                                </li>
+                                <li>Add a short description for each service if needed.</li>
+                                <li>Choose your date and time, then confirm your booking.</li>
+                              </ul>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -344,7 +446,7 @@ const BookingFormSection = () => {
                         booked.
                       </p>
                     </div>
-                  </motion.div>
+                  </MotionDiv>
                 )}
               </AnimatePresence>
             </div>

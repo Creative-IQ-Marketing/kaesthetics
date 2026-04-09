@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, ShieldCheck, Sparkles } from "lucide-react";
+import { Star, ShieldCheck, Cpu } from "lucide-react";
+
+const MotionDiv = motion.div;
 
 const features = [
   {
@@ -9,7 +11,7 @@ const features = [
     description: "Led by Kassandra, a Licensed Skin Expert devoted to your skin's health."
   },
   {
-    icon: <Sparkles className="w-8 h-8" />,
+    icon: <Cpu className="w-8 h-8" />,
     title: "Advanced Technology",
     description: "Using cutting-edge tools like the Astrodome Facial for superior results."
   },
@@ -49,7 +51,7 @@ const HomeWhyChooseUs = () => {
       <div className="absolute top-0 right-0 w-1/3 h-full bg-ka-light/30 skew-x-12 translate-x-20 pointer-events-none" />
       
       <div className="container-custom relative z-10">
-        <motion.div 
+        <MotionDiv 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -62,9 +64,9 @@ const HomeWhyChooseUs = () => {
           <p className="text-gray-500 text-lg font-light tracking-wide">
             Where expertise meets elegance.
           </p>
-        </motion.div>
+        </MotionDiv>
 
-        <motion.div 
+        <MotionDiv 
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -72,7 +74,7 @@ const HomeWhyChooseUs = () => {
           className="grid md:grid-cols-3 gap-12"
         >
           {features.map((feature, index) => (
-            <motion.div 
+            <MotionDiv 
               key={index}
               variants={itemVariants}
               className="group p-8 rounded-2xl bg-gray-50 hover:bg-ka-primary transition-colors duration-500 cursor-default"
@@ -86,9 +88,9 @@ const HomeWhyChooseUs = () => {
               <p className="text-gray-500 leading-relaxed group-hover:text-gray-300 transition-colors duration-500">
                 {feature.description}
               </p>
-            </motion.div>
+            </MotionDiv>
           ))}
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );

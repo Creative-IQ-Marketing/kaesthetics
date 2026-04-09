@@ -36,7 +36,7 @@ const BookingForm = () => {
         areasOfConcern: "",
         consent: false,
       });
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again or call us directly.");
     } finally {
       setIsSubmitting(false);

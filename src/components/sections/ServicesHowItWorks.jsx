@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, UserCheck, Sparkles, Smile } from "lucide-react";
+import { Calendar, UserCheck, HandHeart, Smile } from "lucide-react";
+
+const MotionDiv = motion.div;
 
 const steps = [
   {
@@ -14,7 +16,7 @@ const steps = [
     description: "Get a skin analysis during your first visit.",
   },
   {
-    icon: <Sparkles className="w-8 h-8" />,
+    icon: <HandHeart className="w-8 h-8" />,
     title: "Treat",
     description: "Relax while we take care of your skin.",
   },
@@ -45,7 +47,7 @@ const ServicesHowItWorks = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <motion.div
+            <MotionDiv
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -65,7 +67,7 @@ const ServicesHowItWorks = () => {
               <p className="text-gray-400 text-sm leading-relaxed max-w-[200px]">
                 {step.description}
               </p>
-            </motion.div>
+            </MotionDiv>
           ))}
         </div>
       </div>

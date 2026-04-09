@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Flower, Droplet, ArrowRight } from "lucide-react";
+import { Leaf, Flower, Droplet, ArrowRight } from "lucide-react";
+
+const MotionDiv = motion.div;
 
 const categories = [
   {
     id: "skin-treatments",
     label: "Skin Treatments",
-    icon: <Sparkles className="w-5 h-5" />,
+    icon: <Leaf className="w-5 h-5" />,
   },
   { id: "facials", label: "Facials", icon: <Flower className="w-5 h-5" /> },
   { id: "waxing", label: "Waxing", icon: <Droplet className="w-5 h-5" /> },
@@ -129,7 +131,7 @@ const ServicesList = () => {
 
         {/* Services Grid */}
         <AnimatePresence mode="wait">
-          <motion.div
+          <MotionDiv
             key={activeTab}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -142,7 +144,7 @@ const ServicesList = () => {
             }`}
           >
             {servicesData[activeTab].map((service, index) => (
-              <motion.div
+              <MotionDiv
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -185,9 +187,9 @@ const ServicesList = () => {
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
-              </motion.div>
+              </MotionDiv>
             ))}
-          </motion.div>
+          </MotionDiv>
         </AnimatePresence>
       </div>
     </section>

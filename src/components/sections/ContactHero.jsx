@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+const MotionDiv = motion.div;
+
 const ContactHero = () => {
   return (
     <section className="relative h-[40vh] min-h-[300px] flex items-center justify-center overflow-hidden bg-ka-primary text-white">
@@ -10,7 +12,7 @@ const ContactHero = () => {
       </div>
 
       <div className="container-custom relative z-10 text-center">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -25,7 +27,7 @@ const ContactHero = () => {
             Have questions? We're here to help you on your journey to radiant
             skin.
           </p>
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );

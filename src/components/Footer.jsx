@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Instagram, Facebook, Mail, MapPin, Phone, Clock } from "lucide-react";
 
 export default function Footer() {

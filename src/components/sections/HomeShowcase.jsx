@@ -2,13 +2,17 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
+const MotionDiv = motion.div;
+const MotionImg = motion.img;
+const MotionButton = motion.button;
+
 const HomeShowcase = () => {
   return (
     <section className="relative py-40 overflow-hidden flex items-center justify-center">
       {/* Background Parallax Effect */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black/40 z-10" />
-        <motion.img 
+        <MotionImg 
           initial={{ scale: 1.1 }}
           whileInView={{ scale: 1 }}
           transition={{ duration: 10, ease: "linear" }}
@@ -19,7 +23,7 @@ const HomeShowcase = () => {
       </div>
 
       <div className="container-custom relative z-20 text-center text-white">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -36,15 +40,15 @@ const HomeShowcase = () => {
           </p>
           
           <Link to="/services">
-            <motion.button
+            <MotionButton
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-10 py-4 border border-white/30 bg-white/10 backdrop-blur-sm rounded-full text-white font-medium tracking-widest hover:bg-white hover:text-ka-primary transition-all duration-300"
             >
               EXPLORE OUR PHILOSOPHY
-            </motion.button>
+            </MotionButton>
           </Link>
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );

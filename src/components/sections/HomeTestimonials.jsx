@@ -2,6 +2,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
 
+const MotionDiv = motion.div;
+
 const testimonials = [
   {
     text: "Absolutely amazing and knowledgeable of the service she provides. The best in San Antonio hands down. I don't trust anyone else with my face than Kassandra.",
@@ -22,7 +24,7 @@ const HomeTestimonials = () => {
       </div>
 
       <div className="container-custom relative z-10">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -30,11 +32,11 @@ const HomeTestimonials = () => {
         >
           <span className="text-ka-accent uppercase tracking-[0.2em] text-sm font-medium">Testimonials</span>
           <h2 className="font-serif text-4xl md:text-5xl text-white mt-4">Client Stories</h2>
-        </motion.div>
+        </MotionDiv>
 
         <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
           {testimonials.map((item, index) => (
-            <motion.div
+            <MotionDiv
               key={index}
               initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -50,7 +52,7 @@ const HomeTestimonials = () => {
                 <div className="w-12 h-[1px] bg-ka-accent" />
                 <span className="text-white font-medium tracking-wide">{item.author}</span>
               </div>
-            </motion.div>
+            </MotionDiv>
           ))}
         </div>
       </div>

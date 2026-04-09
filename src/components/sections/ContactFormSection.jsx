@@ -2,13 +2,15 @@ import React from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
 
+const MotionDiv = motion.div;
+
 const ContactFormSection = () => {
   return (
     <section className="py-24 bg-white">
       <div className="container-custom">
         <div className="grid lg:grid-cols-2 gap-16">
           {/* Contact Info */}
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -90,10 +92,10 @@ const ContactFormSection = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
 
           {/* Contact Form */}
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -145,11 +147,11 @@ const ContactFormSection = () => {
                 Send Message <Send className="w-4 h-4" />
               </button>
             </form>
-          </motion.div>
+          </MotionDiv>
         </div>
 
         {/* Map Placeholder */}
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -166,7 +168,7 @@ const ContactFormSection = () => {
             loading="lazy"
             title="K-Aesthetics Location"
           ></iframe>
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );

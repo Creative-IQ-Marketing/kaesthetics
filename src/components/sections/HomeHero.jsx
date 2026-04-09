@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
+const MotionDiv = motion.div;
+
 const HomeHero = () => {
   return (
     <section className="relative min-h-screen flex items-center bg-[#F5EFE6] pt-20 overflow-hidden">
@@ -82,7 +84,7 @@ const HomeHero = () => {
         </div>
       </div>
       {/* Scroll Down Indicator */}
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
@@ -94,13 +96,13 @@ const HomeHero = () => {
         <span className="text-xs uppercase tracking-[0.2em] text-ka-primary/60 font-medium">
           Scroll Down
         </span>
-        <motion.div
+        <MotionDiv
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           <ChevronDown className="w-5 h-5 text-ka-primary/60" />
-        </motion.div>
-      </motion.div>
+        </MotionDiv>
+      </MotionDiv>
     </section>
   );
 };
