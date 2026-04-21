@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 const ServicesHero = () => {
@@ -12,7 +12,7 @@ const ServicesHero = () => {
       </div>
 
       <div className="container-custom relative z-10 text-center">
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -27,11 +27,11 @@ const ServicesHero = () => {
             Personalized skincare solutions designed to reveal your natural
             glow. Experience the perfect blend of relaxation and results.
           </p>
-        </motion.div>
+        </Motion.div>
       </div>
 
       {/* Scroll Down Indicator */}
-      <motion.div
+      <Motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
@@ -43,13 +43,13 @@ const ServicesHero = () => {
         <span className="text-xs uppercase tracking-[0.2em] text-ka-primary/60 font-medium">
           Scroll Down
         </span>
-        <motion.div
+        <Motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           <ChevronDown className="w-5 h-5 text-ka-primary/60" />
-        </motion.div>
-      </motion.div>
+        </Motion.div>
+      </Motion.div>
     </section>
   );
 };

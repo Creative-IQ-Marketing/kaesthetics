@@ -7,10 +7,10 @@ function stableSchemaKey(schema, index) {
 }
 
 export default function StructuredData({ schemas = [] }) {
-  const schemaArray = Array.isArray(schemas) ? schemas.filter(Boolean) : [schemas].filter(Boolean);
-  const schemaSignature = JSON.stringify(schemaArray);
-
   useEffect(() => {
+    const schemaArray = Array.isArray(schemas)
+      ? schemas.filter(Boolean)
+      : [schemas].filter(Boolean);
     const keys = new Set();
     const owner = "kaesthetics";
 
@@ -42,7 +42,7 @@ export default function StructuredData({ schemas = [] }) {
         script.remove();
       }
     });
-  }, [schemaSignature]);
+  }, [schemas]);
 
   return null;
 }

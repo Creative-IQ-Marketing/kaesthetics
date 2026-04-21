@@ -1,9 +1,10 @@
 import React from "react";
 import ServicesHero from "../components/sections/ServicesHero";
 import ServicesHowItWorks from "../components/sections/ServicesHowItWorks";
-import ServicesList, { servicesData } from "../components/sections/ServicesList";
+import ServicesList from "../components/sections/ServicesList";
 import SEO from "../components/SEO";
 import StructuredData from "../components/StructuredData";
+import { servicesData } from "../data/services";
 import {
   BUSINESS_NAME,
   CITY,

@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import SEO from "../components/SEO";
 import StructuredData from "../components/StructuredData";
 import {
@@ -47,7 +47,7 @@ export default function PrivacyPolicy() {
       />
       <StructuredData schemas={schemas} />
       <div className="container-custom max-w-4xl">
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -73,7 +73,7 @@ export default function PrivacyPolicy() {
               If you have any questions about our privacy practices, please contact us at Kaestheticsatx@gmail.com.
             </p>
           </div>
-        </motion.div>
+        </Motion.div>
       </div>
     </div>
   );
