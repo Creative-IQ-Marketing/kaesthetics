@@ -48,7 +48,7 @@ const ContactFormSection = () => {
                     Phone
                   </h4>
                   <p className="text-gray-500 leading-relaxed">
-                    (210) 986-2580
+                    (361) 494-8656
                   </p>
                   <span className="text-xs text-ka-accent uppercase tracking-wider font-bold mt-1 block">
                     Call or Text

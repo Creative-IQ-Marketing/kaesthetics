@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
@@ -9,11 +9,29 @@ import Services from "./pages/Services";
 import Booking from "./pages/Booking";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
+import { initializeAnalytics, trackPageView } from "./services/analytics";
+
+function AnalyticsListener() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const enabled = initializeAnalytics();
+    if (!enabled) return;
+
+    const path = `${location.pathname}${location.search || ""}`;
+    setTimeout(() => {
+      trackPageView(path, document.title);
+    }, 0);
+  }, [location.pathname, location.search]);
+
+  return null;
+}
 
 function App() {
   return (
     <Router>
       <ScrollToTop />
+      <AnalyticsListener />
       <div className="flex flex-col min-h-screen relative">
         <Header />
         <main className="flex-grow pt-20 relative z-10">

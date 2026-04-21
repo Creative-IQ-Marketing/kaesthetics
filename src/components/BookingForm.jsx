@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { submitToGHL } from "../services/ghl";
+import { trackEvent } from "../services/analytics";
 
 const BookingForm = () => {
   const [formData, setFormData] = useState({
@@ -25,10 +26,18 @@ const BookingForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+    trackEvent("form_submit_attempt", {
+      form_name: "booking_form",
+      sms_consent: formData.consent ? "yes" : "no",
+      has_areas_of_concern: formData.areasOfConcern ? "yes" : "no",
+    });
 
     try {
       await submitToGHL(formData);
       setIsSubmitted(true);
+      trackEvent("form_submit_success", {
+        form_name: "booking_form",
+      });
       setFormData({
         name: "",
         email: "",
@@ -38,6 +47,9 @@ const BookingForm = () => {
       });
     } catch {
       setError("Something went wrong. Please try again or call us directly.");
+      trackEvent("form_submit_error", {
+        form_name: "booking_form",
+      });
     } finally {
       setIsSubmitting(false);
     }

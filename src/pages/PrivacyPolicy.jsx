@@ -1,9 +1,51 @@
 import React from "react";
 import { motion } from "framer-motion";
+import SEO from "../components/SEO";
+import StructuredData from "../components/StructuredData";
+import {
+  BUSINESS_NAME,
+  DEFAULT_KEYWORDS,
+  EMAIL,
+  getBaseUrl,
+} from "../seo/config";
 
 export default function PrivacyPolicy() {
+  const baseUrl = getBaseUrl();
+  const canonical = `${baseUrl}/privacy-policy`;
+  const title = `Privacy Policy | ${BUSINESS_NAME}`;
+  const description = `Privacy Policy for ${BUSINESS_NAME}. Learn how we collect, use, and protect your information. Contact us at ${EMAIL} with questions.`;
+
+  const schemas = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description,
+      isPartOf: { "@id": `${baseUrl}#website` },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "@id": `${canonical}#breadcrumbs`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+        { "@type": "ListItem", position: 2, name: "Privacy Policy", item: canonical },
+      ],
+    },
+  ];
+
   return (
     <div className="pt-32 pb-20 bg-[#F5EFE6] min-h-screen">
+      <SEO
+        title={title}
+        description={description}
+        keywords={DEFAULT_KEYWORDS}
+        canonical={canonical}
+        pageType="website"
+      />
+      <StructuredData schemas={schemas} />
       <div className="container-custom max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

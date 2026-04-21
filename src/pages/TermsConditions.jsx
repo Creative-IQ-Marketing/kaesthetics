@@ -1,9 +1,51 @@
 import React from "react";
 import { motion } from "framer-motion";
+import SEO from "../components/SEO";
+import StructuredData from "../components/StructuredData";
+import {
+  BUSINESS_NAME,
+  DEFAULT_KEYWORDS,
+  EMAIL,
+  getBaseUrl,
+} from "../seo/config";
 
 export default function TermsConditions() {
+  const baseUrl = getBaseUrl();
+  const canonical = `${baseUrl}/terms-conditions`;
+  const title = `Terms of Use | ${BUSINESS_NAME}`;
+  const description = `Terms of Use for ${BUSINESS_NAME}. Review appointment, cancellation, and service terms. Contact ${EMAIL} with questions.`;
+
+  const schemas = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description,
+      isPartOf: { "@id": `${baseUrl}#website` },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "@id": `${canonical}#breadcrumbs`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+        { "@type": "ListItem", position: 2, name: "Terms of Use", item: canonical },
+      ],
+    },
+  ];
+
   return (
     <div className="pt-32 pb-20 bg-[#F5EFE6] min-h-screen">
+      <SEO
+        title={title}
+        description={description}
+        keywords={DEFAULT_KEYWORDS}
+        canonical={canonical}
+        pageType="website"
+      />
+      <StructuredData schemas={schemas} />
       <div className="container-custom max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

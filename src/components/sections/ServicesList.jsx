@@ -5,7 +5,7 @@ import { Leaf, Flower, Droplet, ArrowRight } from "lucide-react";
 
 const MotionDiv = motion.div;
 
-const categories = [
+export const categories = [
   {
     id: "skin-treatments",
     label: "Skin Treatments",
@@ -15,7 +15,7 @@ const categories = [
   { id: "waxing", label: "Waxing", icon: <Droplet className="w-5 h-5" /> },
 ];
 
-const servicesData = {
+export const servicesData = {
   "skin-treatments": [
     {
       title: "Nano Infusion",
