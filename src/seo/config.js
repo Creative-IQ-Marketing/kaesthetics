@@ -10,12 +10,11 @@ export const POSTAL_CODE = "78248";
 export const COUNTRY = "US";
 export const PRICE_RANGE = "$$";
 export const DEFAULT_KEYWORDS =
-  "San Antonio skincare, facial treatments San Antonio, acne facial, chemical peel, dermaplaning, anti-aging facial, esthetician San Antonio, skincare studio, K-Aesthetic Skin";
+  "San Antonio skincare, facial treatments San Antonio, skincare studio San Antonio TX, esthetician San Antonio, K-Aesthetic Skin, acne facial San Antonio, chemical peel San Antonio TX, dermaplaning San Antonio, anti-aging facial San Antonio, microneedling San Antonio, HydraFacial San Antonio, LED light therapy San Antonio, skin rejuvenation San Antonio, glowing skin San Antonio, custom facial San Antonio, deep cleansing facial San Antonio, skin care near me San Antonio, best esthetician San Antonio TX, professional skincare San Antonio, facial near me San Antonio";
 export const DEFAULT_DESCRIPTION =
-  "Result-driven skincare treatments designed to promote healthy, radiant skin in San Antonio, TX. Book your appointment with K-Aesthetic Skin.";
+  "San Antonio's premier skincare studio. Result-driven facials, chemical peels, dermaplaning, acne treatments, microneedling & anti-aging skin treatments. Book your appointment at (361) 494-8656.";
 export const SAME_AS = ["https://www.instagram.com/k_aestheticskin/"];
 
 export function getBaseUrl() {
   return window.location.origin;
 }
-

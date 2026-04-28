@@ -1,4 +1,46 @@
+# K-Aesthetic Skin — San Antonio Skincare Studio
 User-agent: *
 Allow: /
 
+# Disallow non-public utility pages
+Disallow: /privacy-policy
+Disallow: /terms-conditions
+
+# Sitemap
 Sitemap: https://k-aesthetic.skin/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Block sensitive paths
+Disallow: /admin/
+Disallow: /.env
+Disallow: /api/
+Disallow: /*.json$
+
+# Allow assets
+Allow: /og-image.jpg
+Allow: /*.jpg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.svg$
+
+# Google & Bing — full access
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# AI bots — allow for generative engine visibility
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
