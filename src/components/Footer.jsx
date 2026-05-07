@@ -20,13 +20,20 @@ export default function Footer() {
               </h2>
             </Link>
             <p className="text-gray-400 leading-relaxed max-w-xs">
-              Dedicated to delivering result-driven treatments designed to promote healthy, radiant skin.
+              Dedicated to delivering result-driven treatments designed to
+              promote healthy, radiant skin.
             </p>
             <div className="flex gap-4">
-              <a href="https://www.instagram.com/k_aestheticskin/" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+              <a
+                href="https://www.instagram.com/k_aestheticskin/"
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
+              >
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+              <a
+                href="#"
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
+              >
                 <Facebook className="w-4 h-4" />
               </a>
             </div>
@@ -39,20 +46,28 @@ export default function Footer() {
               <li className="flex items-start gap-4 text-gray-400 group">
                 <MapPin className="w-5 h-5 mt-1 text-gray-500 group-hover:text-ka-accent transition-colors" />
                 <span className="leading-relaxed group-hover:text-white transition-colors">
-                  1826 North Loop 1604 West<br />
-                  Access Road, Suite 31<br />
+                  1826 North Loop 1604 West
+                  <br />
+                  Access Road, Suite 31
+                  <br />
                   San Antonio, TX 78248
                 </span>
               </li>
               <li className="flex items-center gap-4 text-gray-400 group">
                 <Phone className="w-5 h-5 text-gray-500 group-hover:text-ka-accent transition-colors" />
-                <a href="tel:3614948656" className="group-hover:text-white transition-colors">
+                <a
+                  href="tel:3614948656"
+                  className="group-hover:text-white transition-colors"
+                >
                   (361) 494-8656
                 </a>
               </li>
               <li className="flex items-center gap-4 text-gray-400 group">
                 <Mail className="w-5 h-5 text-gray-500 group-hover:text-ka-accent transition-colors" />
-                <a href="mailto:Kaestheticsatx@gmail.com" className="group-hover:text-white transition-colors">
+                <a
+                  href="mailto:Kaestheticsatx@gmail.com"
+                  className="group-hover:text-white transition-colors"
+                >
                   Kaestheticsatx@gmail.com
                 </a>
               </li>
@@ -67,10 +82,13 @@ export default function Footer() {
                 { name: "Home", path: "/" },
                 { name: "Services", path: "/services" },
                 { name: "Booking", path: "/booking" },
-                { name: "Contact", path: "/contact" }
+                { name: "Contact", path: "/contact" },
               ].map((link) => (
                 <li key={link.name}>
-                  <Link to={link.path} className="text-gray-400 hover:text-white hover:translate-x-2 transition-all duration-300 inline-block">
+                  <Link
+                    to={link.path}
+                    className="text-gray-400 hover:text-white hover:translate-x-2 transition-all duration-300 inline-block"
+                  >
                     {link.name}
                   </Link>
                 </li>
@@ -101,11 +119,33 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} K-Aesthetic Skin. All Rights Reserved.
+            &copy; {new Date().getFullYear()} K-Aesthetic Skin. All Rights
+            Reserved.
           </p>
+          <a
+            href="https://creativeiq.marketing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-600 text-xs tracking-widest uppercase hover:text-ka-accent transition-colors duration-300"
+          >
+            Powered by{" "}
+            <span className="font-semibold text-gray-400 hover:text-ka-accent">
+              Creative IQ
+            </span>
+          </a>
           <div className="flex gap-8 text-sm text-gray-500">
-            <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/terms-conditions" className="hover:text-white transition-colors">Terms of Use</Link>
+            <Link
+              to="/privacy-policy"
+              className="hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              to="/terms-conditions"
+              className="hover:text-white transition-colors"
+            >
+              Terms of Use
+            </Link>
           </div>
         </div>
       </div>
