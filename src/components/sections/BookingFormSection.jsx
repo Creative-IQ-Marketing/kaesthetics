@@ -119,11 +119,6 @@ const BookingFormSection = () => {
     return Number.isFinite(value) ? value : null;
   };
 
-  const selectedServicesText =
-    formData.services.length > 0
-      ? formData.services.map((s) => s.title).join(", ")
-      : "";
-
   const totalValue = formData.services.reduce((sum, s) => {
     const v = parsePriceValue(s.price);
     return v == null ? sum : sum + v;
@@ -174,11 +169,30 @@ const BookingFormSection = () => {
               transition={{ duration: 0.3 }}
               className="space-y-8"
             >
-              {/* Header */}
+              {/* Header with Counter Badge */}
               <div className="text-center max-w-2xl mx-auto">
-                <h2 className="font-serif text-4xl md:text-5xl text-ka-primary mb-3">
-                  Choose Your Service
-                </h2>
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <h2 className="font-serif text-4xl md:text-5xl text-ka-primary">
+                    Choose Your Service
+                  </h2>
+                  <AnimatePresence>
+                    {formData.services.length > 0 && (
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, rotate: 180 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 25,
+                        }}
+                        className="w-14 h-14 rounded-full bg-ka-accent text-white flex items-center justify-center font-bold text-xl shadow-lg ring-2 ring-ka-accent ring-offset-4"
+                      >
+                        {formData.services.length}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
                 <p className="text-gray-600 text-base">
                   Select one or more treatments you'd like to book. We'll
                   provide a summary to paste into your booking confirmation.
@@ -262,33 +276,60 @@ const BookingFormSection = () => {
                 </div>
               </div>
 
-              {/* Info Box */}
+              {/* Info Box with Selection Counter */}
               <div className="max-w-2xl mx-auto rounded-2xl border border-ka-accent/15 bg-ka-accent/5 p-6">
-                <div className="flex gap-3">
+                <div className="flex gap-3 items-start">
                   <span className="text-2xl">💡</span>
-                  <div>
+                  <div className="flex-1">
                     <h4 className="font-semibold text-ka-primary mb-1">
                       Pro Tip
                     </h4>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-gray-700 mb-3">
                       Select multiple services if needed. We'll generate a
                       summary you can copy and paste into your booking
                       confirmation.
                     </p>
+                    <AnimatePresence>
+                      {formData.services.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          className="flex items-center gap-2 text-sm font-medium text-ka-accent"
+                        >
+                          <span className="text-lg">✓</span>
+                          {formData.services.length} service
+                          {formData.services.length !== 1 ? "s" : ""} selected
+                          <span className="text-lg">•</span>
+                          <span className="font-bold">{totalText}</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
 
-              {/* CTA Button */}
+              {/* CTA Button with Dynamic Text */}
               <div className="flex justify-center">
-                <button
+                <motion.button
                   onClick={nextStep}
                   disabled={formData.services.length === 0}
+                  whileHover={
+                    formData.services.length > 0 ? { scale: 1.05 } : {}
+                  }
+                  whileTap={formData.services.length > 0 ? { scale: 0.98 } : {}}
                   className="px-8 py-4 bg-ka-primary text-white font-semibold rounded-full hover:bg-ka-accent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center gap-2 text-lg"
                 >
-                  Continue to Booking
-                  <ArrowRight className="w-5 h-5" />
-                </button>
+                  {formData.services.length > 0 ? (
+                    <>
+                      Continue with {formData.services.length} service
+                      {formData.services.length !== 1 ? "s" : ""}
+                      <ArrowRight className="w-5 h-5" />
+                    </>
+                  ) : (
+                    "Select a Service to Continue"
+                  )}
+                </motion.button>
               </div>
             </MotionDiv>
           )}
@@ -318,6 +359,7 @@ const BookingFormSection = () => {
                 <div className="lg:col-span-1 space-y-6">
                   {/* Booking Summary Card */}
                   <motion.div
+                    ref={summaryRef}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="rounded-2xl bg-ka-primary text-white p-6 shadow-xl"
@@ -326,11 +368,20 @@ const BookingFormSection = () => {
                       <span className="text-xs uppercase tracking-wider text-white/70 font-bold block mb-1">
                         Your Selection
                       </span>
-                      <h3 className="font-serif text-xl">
-                        {formData.services.length === 1
-                          ? "Selected Service"
-                          : "Selected Services"}
-                      </h3>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <h3 className="font-serif text-xl">
+                          {formData.services.length === 1
+                            ? "Selected Service"
+                            : "Selected Services"}
+                        </h3>
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-bold"
+                        >
+                          {formData.services.length}
+                        </motion.span>
+                      </div>
                     </div>
 
                     <div className="space-y-3 mb-5 pb-5 border-b border-white/20">
@@ -385,11 +436,11 @@ const BookingFormSection = () => {
                   {/* Instructions Card */}
                   <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md">
                     <h4 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
-                      📋 Next Steps
+                      Next Steps
                     </h4>
                     <ol className="space-y-4 text-sm text-gray-700">
                       <li className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-ka-accent/20 text-ka-accent flex items-center justify-center text-xs font-bold">
+                        <span className="shrink-0 w-6 h-6 rounded-full bg-ka-accent/20 text-ka-accent flex items-center justify-center text-xs font-bold">
                           1
                         </span>
                         <span>
@@ -397,7 +448,7 @@ const BookingFormSection = () => {
                         </span>
                       </li>
                       <li className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-ka-accent/20 text-ka-accent flex items-center justify-center text-xs font-bold">
+                        <span className="shrink-0 w-6 h-6 rounded-full bg-ka-accent/20 text-ka-accent flex items-center justify-center text-xs font-bold">
                           2
                         </span>
                         <span>
@@ -405,7 +456,7 @@ const BookingFormSection = () => {
                         </span>
                       </li>
                       <li className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-ka-accent/20 text-ka-accent flex items-center justify-center text-xs font-bold">
+                        <span className="shrink-0 w-6 h-6 rounded-full bg-ka-accent/20 text-ka-accent flex items-center justify-center text-xs font-bold">
                           3
                         </span>
                         <span>Complete your contact details &amp; confirm</span>
