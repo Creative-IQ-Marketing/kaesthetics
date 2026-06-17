@@ -9,6 +9,9 @@ Disallow: /terms-conditions
 # Sitemap
 Sitemap: https://k-aesthetic.skin/sitemap.xml
 
+# LLM-readable site summary
+# https://k-aesthetic.skin/llms.txt
+
 # Crawl-delay
 Crawl-delay: 1
 
