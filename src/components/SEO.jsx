@@ -11,8 +11,8 @@ function asAbsoluteUrl(url) {
 
 export default function SEO({
   title = "K-Aesthetic Skin | San Antonio Skincare Studio & Facial Treatments",
-  description = "San Antonio's premier skincare studio. Result-driven facials, chemical peels, dermaplaning, acne treatments, microneedling & anti-aging skin treatments. Book your appointment at (361) 494-8656.",
-  keywords = "San Antonio skincare, facial treatments San Antonio, skincare studio San Antonio TX, esthetician San Antonio, K-Aesthetic Skin, acne facial San Antonio, chemical peel San Antonio TX, dermaplaning San Antonio, anti-aging facial San Antonio, microneedling San Antonio, HydraFacial San Antonio, LED light therapy San Antonio, skin rejuvenation San Antonio, glowing skin San Antonio, custom facial San Antonio, deep cleansing facial San Antonio, skin care near me San Antonio, best esthetician San Antonio TX, professional skincare San Antonio, facial near me San Antonio",
+  description = "San Antonio's premier skincare studio. Result-driven facials, chemical peels, dermaplaning, acne treatments & anti-aging skin treatments. Book your appointment at (361) 494-8656.",
+  keywords = "San Antonio skincare, facial treatments San Antonio, skincare studio San Antonio TX, esthetician San Antonio, K-Aesthetic Skin, acne facial San Antonio, chemical peel San Antonio TX, dermaplaning San Antonio, anti-aging facial San Antonio, HydraFacial San Antonio, LED light therapy San Antonio, skin rejuvenation San Antonio, glowing skin San Antonio, custom facial San Antonio, deep cleansing facial San Antonio, skin care near me San Antonio, best esthetician San Antonio TX, professional skincare San Antonio, facial near me San Antonio",
   canonical = window.location.origin + window.location.pathname,
   ogImage = defaultOgImage,
   pageType = "website",

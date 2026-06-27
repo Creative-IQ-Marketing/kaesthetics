@@ -15,25 +15,21 @@ export const servicesData = {
     {
       title: "Nano Infusion",
       price: "$180",
+      durationMinutes: 60,
       description:
         "A non-invasive treatment that creates micro pathways infusing active ingredients to pass through the layer of dead epidermal cells enhancing the skin's capability for nutrient absorption. Skin is lighter, brighter, and tighter.",
     },
     {
       title: "Dermaplaning",
       price: "$85",
+      durationMinutes: 30,
       description:
         "Gentle exfoliation technique that removes dead skin cells and peach fuzz to reveal a smoother, brighter complexion. Completed with a soothing finishing mask.",
     },
     {
-      title: "Microneedling",
-      price: "$530",
-      sub: "(3 Sessions)",
-      description:
-        "Minimally invasive procedure that strengthens natural collagen and elastin production. Reduces scarring, smooths fine lines, and gives a healthier glow overall.",
-    },
-    {
       title: "Oil Planing",
       price: "$95",
+      durationMinutes: 45,
       description:
         "Perfect for dry or sensitive skin. Uses a nourishing facial oil as a buffer while gently exfoliating with a sterile blade—removing dead skin cells and peach fuzz with added hydration.",
     },
@@ -42,6 +38,7 @@ export const servicesData = {
     {
       title: "Customized Facial",
       price: "$125",
+      durationMinutes: 60,
       description:
         "Tailored to your skin care needs and concerns. Addresses a variety of needs ranging from pre-mature aging to acne flare-ups, to dull lifeless complexion.",
     },

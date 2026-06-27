@@ -164,4 +164,10 @@
   .animation-delay-400 {
     animation-delay: 0.4s;
   }
+
+  .ghl-booking-wrap,
+  .ghl-booking-wrap iframe {
+    overflow: visible !important;
+    max-height: none !important;
+  }
 }

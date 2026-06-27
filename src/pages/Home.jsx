@@ -89,7 +89,7 @@ export default function Home() {
           name: "What skincare treatments does K-Aesthetic Skin offer in San Antonio?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: `${BUSINESS_NAME} in San Antonio offers result-driven skincare treatments including custom facials, chemical peels, dermaplaning, acne facials, anti-aging facials, microneedling, LED light therapy, and skin rejuvenation. Book at ${PHONE_E164} or online.`,
+            text: `${BUSINESS_NAME} in San Antonio offers result-driven skincare treatments including custom facials, chemical peels, dermaplaning, acne facials, anti-aging facials, LED light therapy, and skin rejuvenation. Book at ${PHONE_E164} or online.`,
           },
         },
         {
