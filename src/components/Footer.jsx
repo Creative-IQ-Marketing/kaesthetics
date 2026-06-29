@@ -126,11 +126,25 @@ export default function Footer() {
             href="https://creativeiq.marketing"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-600 text-xs tracking-widest uppercase hover:text-ka-accent transition-colors duration-300"
+            className="group inline-flex items-center gap-1 text-gray-600 text-xs tracking-widest uppercase hover:text-ka-accent transition-colors duration-300"
           >
             Powered by{" "}
-            <span className="font-semibold text-gray-400 hover:text-ka-accent">
+            <span className="inline-flex items-center gap-0.5 font-semibold text-gray-400 group-hover:text-ka-accent">
               Creative IQ
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-3 w-3 -translate-y-px transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              >
+                <path d="M7 17L17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
             </span>
           </a>
           <div className="flex gap-8 text-sm text-gray-500">
