@@ -2,6 +2,7 @@ import React from "react";
 import ServicesHero from "../components/sections/ServicesHero";
 import ServicesHowItWorks from "../components/sections/ServicesHowItWorks";
 import ServicesList from "../components/sections/ServicesList";
+import HomeBookCTA from "../components/sections/HomeBookCTA";
 import SEO from "../components/SEO";
 import StructuredData from "../components/StructuredData";
 import { servicesData } from "../data/services";
@@ -82,6 +83,7 @@ export default function Services() {
       <ServicesHero />
       <ServicesHowItWorks />
       <ServicesList />
+      <HomeBookCTA />
     </div>
   );
 }

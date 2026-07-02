@@ -1,6 +1,7 @@
 import React from 'react';
 import ContactHero from '../components/sections/ContactHero';
 import ContactFormSection from '../components/sections/ContactFormSection';
+import HomeBookCTA from '../components/sections/HomeBookCTA';
 import SEO from "../components/SEO";
 import StructuredData from "../components/StructuredData";
 import {
@@ -65,7 +66,7 @@ export default function Contact() {
   ];
 
   return (
-    <div>
+    <div className="overflow-hidden">
       <SEO
         title={title}
         description={description}
@@ -76,6 +77,7 @@ export default function Contact() {
       <StructuredData schemas={schemas} />
       <ContactHero />
       <ContactFormSection />
+      <HomeBookCTA />
     </div>
   );
 }

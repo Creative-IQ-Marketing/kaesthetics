@@ -108,7 +108,7 @@ const Booking = () => {
   ];
 
   return (
-    <div>
+    <div className="overflow-hidden">
       <SEO
         title={title}
         description={description}
@@ -118,55 +118,43 @@ const Booking = () => {
       />
       <StructuredData schemas={schemas} />
       <BookingHero />
-      <section className="bg-white">
+      <section className="relative z-10 -mt-14 bg-ka-cream pb-4 md:-mt-20">
         <div className="container-custom max-w-4xl">
-          <div className="px-4 sm:px-0">
-            <div className="rounded-3xl border border-gray-100 bg-[#FBFBFB] shadow-lg overflow-hidden -mt-10 sm:-mt-14 relative z-10">
-              <div className="p-8 sm:p-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-ka-accent/10 flex items-center justify-center text-ka-accent">
-                    <Clock className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 font-semibold">
-                      Open Hours
-                    </p>
-                    <h2 className="font-serif text-2xl text-ka-primary">
-                      When to Visit
-                    </h2>
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <div className="rounded-2xl bg-white border border-gray-100 p-5">
-                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 font-semibold mb-2">
-                      Mon – Fri
-                    </p>
-                    <p className="font-serif text-xl text-ka-primary">9am – 6pm</p>
-                  </div>
-                  <div className="rounded-2xl bg-white border border-gray-100 p-5">
-                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 font-semibold mb-2">
-                      Saturday
-                    </p>
-                    <p className="font-serif text-xl text-ka-primary">
-                      10am – 4pm
-                    </p>
-                  </div>
-                  <div className="rounded-2xl bg-white border border-gray-100 p-5">
-                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 font-semibold mb-2">
-                      Sunday
-                    </p>
-                    <p className="font-serif text-xl text-ka-primary">Closed</p>
-                  </div>
-                </div>
-
-                <div className="mt-6 rounded-2xl bg-white border border-gray-100 p-5">
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    If you don’t see an ideal time in the calendar, call us and
-                    we’ll help you get booked.
-                  </p>
-                </div>
+          <div className="premium-card overflow-hidden">
+            <div className="relative h-2 bg-gradient-to-r from-ka-accent via-ka-accent-light to-ka-accent/40" />
+            <div className="premium-card-pad">
+            <div className="mb-8 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ka-pink text-ka-accent">
+                <Clock className="h-5 w-5" />
               </div>
+              <div>
+                <p className="section-label">Open Hours</p>
+                <h2 className="font-serif text-2xl text-ka-primary">When to Visit</h2>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                { day: "Mon – Fri", time: "9am – 5pm" },
+                { day: "Saturday", time: "9am – 4pm" },
+                { day: "Sunday", time: "Closed" },
+              ].map((row) => (
+                <div key={row.day} className="stat-pill">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-ka-muted">
+                    {row.day}
+                  </p>
+                  <p className="mt-2 font-serif text-xl text-ka-primary">{row.time}</p>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-6 text-sm leading-relaxed text-ka-muted">
+              If you don't see an ideal time in the calendar, call us at{" "}
+              <a href="tel:3614948656" className="text-ka-accent hover:underline">
+                (361) 494-8656
+              </a>{" "}
+              and we'll help you get booked.
+            </p>
             </div>
           </div>
         </div>

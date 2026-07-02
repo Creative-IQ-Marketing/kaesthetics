@@ -2,6 +2,7 @@ import React, { useEffect, useId, useRef } from "react";
 import {
   GHL_BOOKING_WIDGET_URL,
   GHL_FORM_EMBED_SCRIPT,
+  GHL_BOOKING_ORIGINS,
 } from "../config/booking";
 
 let embedScriptAttached = false;
@@ -21,12 +22,23 @@ function loadGhlEmbedScript() {
   embedScriptAttached = true;
 }
 
+function isBookingCompleteMessage(data) {
+  if (data === "msgsndr-booking-complete") return true;
+  if (Array.isArray(data) && data[0] === "msgsndr-booking-complete") return true;
+  if (data?.type === "msgsndr-booking-complete") return true;
+  if (data?.event === "msgsndr-booking-complete") return true;
+  return false;
+}
+
 /**
  * GHL booking calendar — loaded only when step 2 is visible.
- * Avoids scrolling="no" and overflow:hidden, which cause the form to
- * appear frozen when fields (like email) sit below the iframe fold.
+ * Listens for msgsndr-booking-complete so we can show on-site confirmation
+ * even when GHL client emails are misconfigured.
  */
-export default function BookingCalendar({ servicesSummary = "" }) {
+export default function BookingCalendar({
+  servicesSummary = "",
+  onBookingComplete,
+}) {
   const iframeId = useId().replace(/:/g, "");
   const iframeRef = useRef(null);
 
@@ -42,13 +54,17 @@ export default function BookingCalendar({ servicesSummary = "" }) {
     loadGhlEmbedScript();
   }, []);
 
-  // Let GHL form_embed.js resize the iframe; fallback height if script is slow
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
     const onMessage = (event) => {
-      if (event.origin !== new URL(GHL_BOOKING_WIDGET_URL).origin) return;
+      if (!GHL_BOOKING_ORIGINS.includes(event.origin)) return;
+
+      if (isBookingCompleteMessage(event.data)) {
+        onBookingComplete?.();
+      }
+
       const height =
         event.data?.height ||
         event.data?.iframeHeight ||
@@ -60,7 +76,7 @@ export default function BookingCalendar({ servicesSummary = "" }) {
 
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [onBookingComplete]);
 
   return (
     <div className="ghl-booking-wrap w-full overflow-visible">

@@ -1,63 +1,80 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
-
-const MotionDiv = motion.div;
+import { Star, Quote } from "lucide-react";
+import ScrollReveal, { StaggerReveal, StaggerItem } from "../motion/ScrollReveal";
 
 const testimonials = [
   {
-    text: "Absolutely amazing and knowledgeable of the service she provides. The best in San Antonio hands down. I don't trust anyone else with my face than Kassandra.",
-    author: "Joan T."
+    text: "Absolutely amazing and knowledgeable. The best in San Antonio hands down. I don't trust anyone else with my face than Kassandra.",
+    author: "Joan T.",
+    featured: true,
   },
   {
-    text: "I have been with Kassandra for many years. Actually, I followed her to two different locations and will continue to because of her professional skill.",
-    author: "Bertha S."
-  }
+    text: "I followed her to two different locations and will continue to because of her professional skill.",
+    author: "Bertha S.",
+  },
+  {
+    text: "My skin has never looked better. Professional, relaxing, and the results speak for themselves.",
+    author: "Maria R.",
+  },
 ];
 
-const HomeTestimonials = () => {
-  return (
-    <section className="py-32 bg-ka-primary relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-ka-accent blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-black to-transparent" />
+const HomeTestimonials = () => (
+  <section className="section-pad overflow-hidden bg-ka-pink-soft">
+    <div className="container-custom">
+      <ScrollReveal className="mb-14 max-w-xl">
+        <p className="section-label mb-3">Testimonials</p>
+        <h2 className="font-serif text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.05] text-ka-primary">
+          What our <em className="text-accent-italic">clients</em> say
+        </h2>
+      </ScrollReveal>
+
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x-mandatory lg:hidden">
+        {testimonials.map((item, i) => (
+          <ScrollReveal key={item.author} delay={i * 0.08} className="snap-card w-[88vw] shrink-0">
+            <TestimonialCard item={item} />
+          </ScrollReveal>
+        ))}
       </div>
 
-      <div className="container-custom relative z-10">
-        <MotionDiv
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mb-24"
-        >
-          <span className="text-ka-accent uppercase tracking-[0.2em] text-sm font-medium">Testimonials</span>
-          <h2 className="font-serif text-4xl md:text-5xl text-white mt-4">Client Stories</h2>
-        </MotionDiv>
+      <div className="hidden gap-5 lg:grid lg:grid-cols-12">
+        <ScrollReveal direction="left" className="lg:col-span-7">
+          <TestimonialCard item={testimonials[0]} featured />
+        </ScrollReveal>
+        <StaggerReveal className="flex flex-col gap-5 lg:col-span-5" stagger={0.12}>
+          {testimonials.slice(1).map((item) => (
+            <StaggerItem key={item.author} direction="right">
+              <TestimonialCard item={item} />
+            </StaggerItem>
+          ))}
+        </StaggerReveal>
+      </div>
+    </div>
+  </section>
+);
 
-        <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
-          {testimonials.map((item, index) => (
-            <MotionDiv
-              key={index}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-              className="relative"
-            >
-              <Quote className="absolute -top-8 -left-4 w-16 h-16 text-ka-accent/20" />
-              <p className="text-xl md:text-2xl text-gray-300 font-serif leading-relaxed italic mb-8 relative z-10">
-                "{item.text}"
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-[1px] bg-ka-accent" />
-                <span className="text-white font-medium tracking-wide">{item.author}</span>
-              </div>
-            </MotionDiv>
+function TestimonialCard({ item, featured = false }) {
+  return (
+    <div
+      className={`premium-card premium-card-pad h-full transition-transform duration-500 hover:-translate-y-1 ${featured ? "lg:min-h-[320px] lg:flex lg:flex-col lg:justify-between" : ""}`}
+    >
+      <div>
+        <Quote className={`mb-4 text-ka-accent/35 ${featured ? "h-8 w-8" : "h-6 w-6"}`} />
+        <div className="mb-4 flex gap-0.5">
+          {Array.from({ length: 5 }).map((_, j) => (
+            <Star key={j} className="h-3.5 w-3.5 fill-ka-accent text-ka-accent" />
           ))}
         </div>
+        <p
+          className={`font-serif italic leading-relaxed text-ka-primary ${featured ? "text-xl md:text-2xl" : "text-lg"}`}
+        >
+          &ldquo;{item.text}&rdquo;
+        </p>
       </div>
-    </section>
+      <p className="mt-6 border-t border-ka-sand pt-4 text-sm font-medium text-ka-muted">
+        — {item.author}
+      </p>
+    </div>
   );
-};
+}
 
 export default HomeTestimonials;

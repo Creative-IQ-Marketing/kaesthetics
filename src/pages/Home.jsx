@@ -1,8 +1,10 @@
 import React from "react";
 import HomeHero from "../components/sections/HomeHero";
-import HomeWhyChooseUs from "../components/sections/HomeWhyChooseUs";
+import HomeServices from "../components/sections/HomeServices";
+import HomePromo from "../components/sections/HomePromo";
+import HomeAbout from "../components/sections/HomeAbout";
 import HomeTestimonials from "../components/sections/HomeTestimonials";
-import HomeShowcase from "../components/sections/HomeShowcase";
+import HomeBookCTA from "../components/sections/HomeBookCTA";
 import HomeInstagram from "../components/sections/HomeInstagram";
 import SEO from "../components/SEO";
 import StructuredData from "../components/StructuredData";
@@ -147,9 +149,11 @@ export default function Home() {
       />
       <StructuredData schemas={schemas} />
       <HomeHero />
-      <HomeWhyChooseUs />
-      <HomeShowcase />
+      <HomeServices />
+      <HomePromo />
+      <HomeAbout />
       <HomeTestimonials />
+      <HomeBookCTA />
       <HomeInstagram />
     </div>
   );

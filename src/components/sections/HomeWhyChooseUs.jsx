@@ -1,96 +1,105 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Star, ShieldCheck, Cpu } from "lucide-react";
-
-const MotionDiv = motion.div;
+import React, { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { images } from "../../data/images";
+import ScrollReveal from "../motion/ScrollReveal";
 
 const features = [
   {
-    icon: <Star className="w-8 h-8" />,
-    title: "17 Years Experience",
-    description: "Led by Kassandra, a Licensed Skin Expert devoted to your skin's health."
+    n: "01",
+    title: "17 Years of Mastery",
+    desc: "Led by Kassandra — devoted to your skin's long-term health and radiance.",
   },
   {
-    icon: <Cpu className="w-8 h-8" />,
+    n: "02",
     title: "Advanced Technology",
-    description: "Using cutting-edge tools like the Astrodome Facial for superior results."
+    desc: "Astrodome LED, nano-infusion & oxygen facials for real, visible results.",
   },
   {
-    icon: <ShieldCheck className="w-8 h-8" />,
-    title: "Result Driven",
-    description: "Customized treatments designed to promote healthy, radiant skin."
-  }
+    n: "03",
+    title: "Personalized Protocols",
+    desc: "Every facial tailored — never a one-size-fits-all approach.",
+  },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.3
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 10
-    }
-  }
-};
-
 const HomeWhyChooseUs = () => {
-  return (
-    <section className="py-32 bg-white relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-ka-light/30 skew-x-12 translate-x-20 pointer-events-none" />
-      
-      <div className="container-custom relative z-10">
-        <MotionDiv 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center max-w-3xl mx-auto mb-20"
-        >
-          <h2 className="font-serif text-5xl md:text-6xl text-ka-primary mb-6">
-            Why K-Aesthetic?
-          </h2>
-          <p className="text-gray-500 text-lg font-light tracking-wide">
-            Where expertise meets elegance.
-          </p>
-        </MotionDiv>
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const col1Y = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  const col2Y = useTransform(scrollYProgress, [0, 1], [-40, 60]);
 
-        <MotionDiv 
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid md:grid-cols-3 gap-12"
-        >
-          {features.map((feature, index) => (
-            <MotionDiv 
-              key={index}
-              variants={itemVariants}
-              className="group p-8 rounded-2xl bg-gray-50 hover:bg-ka-primary transition-colors duration-500 cursor-default"
-            >
-              <div className="w-16 h-16 rounded-full bg-ka-accent/10 flex items-center justify-center text-ka-accent mb-8 group-hover:bg-white/10 group-hover:text-white transition-colors duration-500">
-                {feature.icon}
-              </div>
-              <h3 className="font-serif text-2xl text-ka-primary mb-4 group-hover:text-white transition-colors duration-500">
-                {feature.title}
-              </h3>
-              <p className="text-gray-500 leading-relaxed group-hover:text-gray-300 transition-colors duration-500">
-                {feature.description}
-              </p>
-            </MotionDiv>
-          ))}
-        </MotionDiv>
+  return (
+    <section ref={ref} className="overflow-hidden bg-ka-blush py-20 md:py-32">
+      <div className="container-custom">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
+          <ScrollReveal className="lg:col-span-4 lg:pt-12" y={50} rotateZ={-1}>
+            <p className="section-label mb-4">Why K-Aesthetic</p>
+            <h2 className="section-title">
+              Expertise
+              <br />
+              <em className="italic font-normal">meets elegance</em>
+            </h2>
+          </ScrollReveal>
+
+          <div className="space-y-0 lg:col-span-4">
+            {features.map((f, i) => (
+              <ScrollReveal key={f.n} y={60} delay={i * 0.1} rotateZ={i % 2 ? 1 : -1}>
+                <div className="border-b border-ka-primary/10 py-8 first:pt-0">
+                  <span className="font-serif text-4xl text-ka-accent/50">{f.n}</span>
+                  <h3 className="mt-2 font-serif text-xl text-ka-primary">{f.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ka-muted">{f.desc}</p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          {/* Parallax image columns */}
+          <div className="relative hidden lg:col-span-4 lg:block">
+            <motion.div style={{ y: col1Y }} className="absolute left-0 top-0 w-[55%]">
+              <motion.img
+                src={images.facial}
+                alt=""
+                className="aspect-[3/4] w-full rounded-2xl object-cover shadow-elevated"
+                style={{ rotateZ: -4, transformPerspective: 1200 }}
+                whileHover={{ rotateZ: -2, scale: 1.03 }}
+              />
+            </motion.div>
+            <motion.div style={{ y: col2Y }} className="absolute right-0 top-24 w-[50%]">
+              <motion.img
+                src={images.glowingSkin}
+                alt=""
+                className="aspect-square w-full rounded-2xl object-cover shadow-elevated"
+                style={{ rotateZ: 3, transformPerspective: 1200 }}
+                whileHover={{ rotateZ: 1.5, scale: 1.03 }}
+              />
+            </motion.div>
+            <motion.img
+              src={images.products}
+              alt=""
+              style={{ y: col1Y }}
+              className="absolute bottom-0 left-1/4 w-[40%] rounded-xl object-cover shadow-soft"
+            />
+          </div>
+
+          {/* Mobile image strip */}
+          <div className="flex gap-3 overflow-x-auto pb-2 lg:hidden snap-x-mandatory">
+            {[images.facial, images.glowingSkin, images.products].map((src, i) => (
+              <motion.img
+                key={i}
+                src={src}
+                alt=""
+                loading="lazy"
+                initial={{ opacity: 0, x: 40, rotateZ: i % 2 ? 3 : -3 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="snap-card h-48 w-36 shrink-0 rounded-xl object-cover shadow-card"
+                style={{ rotateZ: i % 2 ? 2 : -2 }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

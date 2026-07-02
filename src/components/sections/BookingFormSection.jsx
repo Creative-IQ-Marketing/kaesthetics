@@ -2,13 +2,14 @@ import React, { useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CheckCircle,
   Copy,
   Check,
   ArrowRight,
 } from "lucide-react";
 import { serviceCategories, servicesData } from "../../data/services";
 import BookingCalendar from "../BookingCalendar";
+import ScrollReveal from "../motion/ScrollReveal";
+import { EMAIL, PHONE_DISPLAY } from "../../seo/config";
 
 const MotionDiv = motion.div;
 
@@ -73,6 +74,7 @@ const BookingFormSection = () => {
   const [formData, setFormData] = useState({
     services: initialSelection.services,
   });
+  const [bookingComplete, setBookingComplete] = useState(false);
 
   const handleServiceSelect = (service) => {
     setFormData((prev) => ({
@@ -83,8 +85,14 @@ const BookingFormSection = () => {
     }));
   };
 
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => prev - 1);
+  const nextStep = () => {
+    setBookingComplete(false);
+    setStep((prev) => prev + 1);
+  };
+  const prevStep = () => {
+    setBookingComplete(false);
+    setStep((prev) => prev - 1);
+  };
 
   const totalValue = formData.services.reduce((sum, s) => {
     const v = parsePriceValue(s.price);
@@ -143,8 +151,39 @@ const BookingFormSection = () => {
   };
 
   return (
-    <section className="relative bg-white py-12">
+    <section className="section-pad bg-ka-cream">
       <div className="container-custom max-w-full">
+        <ScrollReveal className="mb-12 flex justify-center">
+          <div className="flex items-center gap-3">
+            {[
+              { n: 1, label: "Choose service" },
+              { n: 2, label: "Book time" },
+            ].map((s, i) => (
+              <React.Fragment key={s.n}>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+                      step >= s.n
+                        ? "bg-ka-primary text-white"
+                        : "border border-ka-sand bg-white text-ka-muted"
+                    }`}
+                  >
+                    {step > s.n ? <Check className="h-4 w-4" /> : s.n}
+                  </span>
+                  <span
+                    className={`hidden text-[10px] font-semibold uppercase tracking-[0.16em] sm:block ${
+                      step >= s.n ? "text-ka-primary" : "text-ka-muted"
+                    }`}
+                  >
+                    {s.label}
+                  </span>
+                </div>
+                {i === 0 && <span className="h-px w-8 bg-ka-sand sm:w-12" />}
+              </React.Fragment>
+            ))}
+          </div>
+        </ScrollReveal>
+
         <AnimatePresence mode="wait">
           {step === 1 && (
             <MotionDiv
@@ -178,7 +217,7 @@ const BookingFormSection = () => {
                     )}
                   </AnimatePresence>
                 </div>
-                <p className="text-base text-gray-600">
+                <p className="text-base text-ka-muted">
                   Select one or more treatments. We&apos;ll generate a summary
                   to paste into the booking form.
                 </p>
@@ -190,11 +229,9 @@ const BookingFormSection = () => {
                     key={cat.id}
                     type="button"
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-medium transition-all duration-300 ${
-                      activeCategory === cat.id
-                        ? "scale-105 border-ka-primary bg-ka-primary text-white shadow-lg"
-                        : "border-gray-200 bg-white text-gray-600 hover:border-ka-accent hover:text-ka-accent hover:shadow-md"
-                    }`}
+                  className={`tab-pill ${
+                    activeCategory === cat.id ? "tab-pill-active" : "tab-pill-inactive"
+                  }`}
                   >
                     {cat.icon}
                     {cat.label}
@@ -217,10 +254,10 @@ const BookingFormSection = () => {
                           boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
                         }}
                         onClick={() => handleServiceSelect(service)}
-                        className={`group flex h-full cursor-pointer flex-col rounded-2xl border-2 p-5 text-left transition-all duration-200 ${
+                        className={`group flex h-full cursor-pointer flex-col rounded-3xl border p-5 text-left transition-all duration-300 ${
                           selected
-                            ? "border-ka-primary bg-ka-primary text-white shadow-xl ring-2 ring-ka-accent ring-offset-2"
-                            : "border-gray-100 bg-white text-gray-900 hover:border-ka-accent hover:shadow-lg"
+                            ? "border-ka-primary bg-ka-primary text-white shadow-soft"
+                            : "border-ka-sand bg-white text-ka-primary hover:border-ka-accent hover:shadow-card"
                         }`}
                       >
                         <div className="flex-1">
@@ -234,7 +271,7 @@ const BookingFormSection = () => {
                           {service.sub && (
                             <span
                               className={`mb-3 block text-xs ${
-                                selected ? "text-gray-300" : "text-gray-500"
+                                selected ? "text-white/60" : "text-ka-muted"
                               }`}
                             >
                               {service.sub}
@@ -243,7 +280,7 @@ const BookingFormSection = () => {
                           {service.durationMinutes && (
                             <span
                               className={`text-xs ${
-                                selected ? "text-white/70" : "text-gray-400"
+                                selected ? "text-white/70" : "text-ka-muted/70"
                               }`}
                             >
                               ~{service.durationMinutes} min
@@ -270,7 +307,7 @@ const BookingFormSection = () => {
                     <h4 className="mb-1 font-semibold text-ka-primary">
                       Pro Tip
                     </h4>
-                    <p className="mb-3 text-sm text-gray-700">
+                    <p className="mb-3 text-sm text-ka-muted">
                       Booking multiple services? Copy the summary so the full
                       appointment length is noted — e.g. dermaplaning + facial
                       needs more than 30 minutes.
@@ -310,7 +347,7 @@ const BookingFormSection = () => {
                     formData.services.length > 0 ? { scale: 1.05 } : {}
                   }
                   whileTap={formData.services.length > 0 ? { scale: 0.98 } : {}}
-                  className="flex items-center gap-2 rounded-full bg-ka-primary px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:bg-ka-accent hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn-primary gap-2 px-8 py-4 text-base disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {formData.services.length > 0 ? (
                     <>
@@ -339,7 +376,7 @@ const BookingFormSection = () => {
                 <h2 className="mb-3 font-serif text-4xl text-ka-primary md:text-5xl">
                   Complete Your Booking
                 </h2>
-                <p className="text-base text-gray-600">
+                <p className="text-base text-ka-muted">
                   Pick a date &amp; time, then paste your summary into
                   &ldquo;Additional Information&rdquo;
                 </p>
@@ -434,11 +471,11 @@ const BookingFormSection = () => {
                     </button>
                   </motion.div>
 
-                  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md">
-                    <h4 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-900">
+                  <div className="premium-card premium-card-pad">
+                    <h4 className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-ka-muted">
                       Next Steps
                     </h4>
-                    <ol className="space-y-4 text-sm text-gray-700">
+                    <ol className="space-y-4 text-sm text-ka-muted">
                       <li className="flex gap-3">
                         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ka-accent/20 text-xs font-bold text-ka-accent">
                           1
@@ -464,36 +501,95 @@ const BookingFormSection = () => {
                   </div>
 
                   <div className="rounded-2xl border border-ka-accent/20 bg-gradient-to-br from-ka-accent/10 to-ka-accent/5 p-5">
-                    <p className="text-sm leading-relaxed text-gray-700">
-                      <strong className="text-ka-accent">Form stuck?</strong>
+                    <p className="text-sm leading-relaxed text-ka-muted">
+                      <strong className="text-ka-accent">After you book</strong>
                       <br />
-                      Scroll inside the calendar panel or call{" "}
+                      You should receive a confirmation by email. Check spam if
+                      nothing arrives in a few minutes, or call{" "}
                       <a
                         href="tel:3614948656"
                         className="font-bold text-ka-accent hover:underline"
                       >
-                        361-494-8656
+                        {PHONE_DISPLAY}
                       </a>
+                      .
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-200 bg-white p-5">
+                    <p className="text-sm leading-relaxed text-ka-muted">
+                      <strong className="text-ka-primary">Form stuck?</strong>
+                      <br />
+                      Scroll inside the calendar panel to reach all fields.
                     </p>
                   </div>
 
                   <button
                     type="button"
                     onClick={prevStep}
-                    className="w-full rounded-full border border-gray-300 px-4 py-3 font-medium transition-colors hover:bg-gray-50"
+                    className="btn-secondary w-full"
                   >
                     ← Back to Services
                   </button>
                 </div>
 
                 <div className="overflow-visible lg:col-span-2">
-                  <div className="overflow-visible rounded-2xl border border-gray-200 bg-white shadow-lg">
-                    <BookingCalendar servicesSummary={servicesSummary} />
-                  </div>
-                  <p className="mt-3 text-center text-xs text-gray-500">
-                    Secure online scheduling · scroll within the calendar if
-                    fields are below the fold
-                  </p>
+                  {bookingComplete ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="premium-card premium-card-pad text-center"
+                    >
+                      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                        <Check className="h-8 w-8 text-green-600" />
+                      </div>
+                      <h3 className="font-serif text-3xl text-ka-primary">
+                        You&apos;re Booked!
+                      </h3>
+                      <p className="mx-auto mt-4 max-w-md text-ka-muted">
+                        Your appointment is saved. A confirmation email should
+                        arrive shortly — please check your inbox and spam
+                        folder.
+                      </p>
+                      <p className="mx-auto mt-4 max-w-md text-sm text-ka-muted">
+                        Questions? Call or text{" "}
+                        <a
+                          href="tel:3614948656"
+                          className="font-semibold text-ka-accent hover:underline"
+                        >
+                          {PHONE_DISPLAY}
+                        </a>{" "}
+                        or email{" "}
+                        <a
+                          href={`mailto:${EMAIL}`}
+                          className="font-semibold text-ka-accent hover:underline"
+                        >
+                          {EMAIL}
+                        </a>
+                        .
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setBookingComplete(false)}
+                        className="btn-secondary mt-8"
+                      >
+                        Book another appointment
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <>
+                      <div className="premium-card overflow-visible">
+                        <BookingCalendar
+                          servicesSummary={servicesSummary}
+                          onBookingComplete={() => setBookingComplete(true)}
+                        />
+                      </div>
+                      <p className="mt-3 text-center text-xs text-ka-muted">
+                        Secure online scheduling · scroll within the calendar if
+                        fields are below the fold
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </MotionDiv>

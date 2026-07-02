@@ -1,145 +1,137 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import logo from "../assets/kalogo.png"
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, Menu, X } from "lucide-react";
+import logo from "../assets/kalogo.png";
 
+const navLinks = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Booking", path: "/booking" },
+  { name: "Contact", path: "/contact" },
+];
+
+/** Solid header for inner pages (home uses integrated HeroHeader) */
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Services", path: "/services" },
-    { name: "Booking", path: "/booking" },
-    { name: "Contact", path: "/contact" },
-  ];
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-[#F5EFE6]/80 backdrop-blur-md transition-all duration-300">
-        <div className="container-custom">
-          <div className="flex items-center justify-between h-24">
-            {/* Logo */}
-            <Link
-              to="/"
-              className="font-serif text-3xl font-bold tracking-tight text-ka-primary relative z-50"
-            >
-              <img src={logo} alt="K-Aesthetic" className="w-70 h-auto" />
+      <header className="sticky top-0 z-50 border-b border-ka-sand/80 bg-ka-cream/95 backdrop-blur-md">
+        <div className="container-wide px-5 sm:px-8 lg:px-12">
+          <div className="flex h-[4.25rem] items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr]">
+            <Link to="/" className="shrink-0 lg:hidden">
+              <img src={logo} alt="K-Aesthetic Skin" className="h-9 w-auto" />
             </Link>
 
-            {/* Desktop nav — centered absolutely */}
-            <nav className="hidden lg:flex items-center gap-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-              {navLinks.map((link) => (
+            <nav className="hidden items-center gap-8 lg:flex">
+              {navLinks.slice(0, 2).map((link) => (
                 <Link
-                  key={link.name}
+                  key={link.path}
                   to={link.path}
-                  className="text-gray-800 text-sm font-medium hover:text-ka-accent transition-colors uppercase tracking-wider"
+                  className={`text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-ka-accent ${
+                    location.pathname === link.path ? "text-ka-accent" : "text-ka-primary/75"
+                  }`}
                 >
                   {link.name}
                 </Link>
               ))}
             </nav>
 
-            {/* Desktop right */}
-            <div className="hidden lg:flex items-center gap-6">
-              <div className="flex flex-col items-end text-right">
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">
-                  Call Us
-                </span>
-                <a
-                  href="tel:3614948656"
-                  className="text-ka-primary font-sans font-medium hover:text-ka-accent transition-colors"
+            <Link to="/" className="hidden justify-self-center lg:block">
+              <img src={logo} alt="K-Aesthetic Skin" className="h-11 w-auto" />
+            </Link>
+
+            <div className="hidden items-center justify-end gap-6 lg:flex">
+              {navLinks.slice(2).map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-ka-accent ${
+                    location.pathname === link.path ? "text-ka-accent" : "text-ka-primary/75"
+                  }`}
                 >
-                  (361) 494-8656
-                </a>
-              </div>
-              <Link
-                to="/booking"
-                className="bg-ka-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-ka-accent transition-colors duration-300"
-              >
-                Book Now
+                  {link.name}
+                </Link>
+              ))}
+              <Link to="/booking" className="btn-primary !px-5 !py-2.5 !text-[10px] !tracking-[0.16em]">
+                Book
               </Link>
             </div>
 
-            {/* Mobile hamburger — sits above overlay via z-50 only when menu is closed */}
             <button
-              className={`lg:hidden p-2 text-ka-primary ${menuOpen ? "invisible" : "relative z-50"}`}
+              type="button"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-ka-sand lg:hidden"
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
             >
-              <div className="space-y-1.5">
-                <span className="block w-8 h-0.5 bg-current" />
-                <span className="block w-8 h-0.5 bg-current" />
-                <span className="block w-8 h-0.5 bg-current" />
-              </div>
+              <Menu className="h-5 w-5 text-ka-primary" />
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile menu — completely separate from header, owns full z-50 stack */}
-      <div
-        className={`fixed inset-0 z-50 bg-[#F5EFE6] flex flex-col lg:hidden
-          transition-opacity duration-300
-          ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-      >
-        {/* Close button — top right, inside the overlay */}
-        <div className="flex items-center justify-between px-6 h-24 shrink-0">
-          <Link
-            to="/"
-            className="font-serif text-3xl font-bold tracking-tight text-ka-primary"
-            onClick={() => setMenuOpen(false)}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col bg-ka-cream lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <img src={logo} alt="K-Aesthetic" className="w-60 h-auto" />
-          </Link>
-          <button
-            onClick={() => setMenuOpen(false)}
-            aria-label="Close menu"
-            className="p-2 text-ka-primary"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            >
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Nav links — vertically centered in remaining space */}
-        <nav className="flex-1 flex flex-col items-center justify-center gap-8 text-center">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className="font-serif text-4xl text-ka-primary hover:text-ka-accent transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Footer of overlay */}
-        <div className="shrink-0 flex flex-col items-center gap-4 pb-12">
-          <a
-            href="tel:3614948656"
-            className="text-base font-medium text-gray-500 tracking-wide"
-          >
-            (361) 494-8656
-          </a>
-          <Link
-            to="/booking"
-            className="bg-ka-primary text-white px-10 py-3.5 rounded-full text-base font-medium hover:bg-ka-accent transition-colors"
-            onClick={() => setMenuOpen(false)}
-          >
-            Book Now
-          </Link>
-        </div>
-      </div>
+            <div className="flex h-[4.25rem] items-center justify-between px-5">
+              <img src={logo} alt="" className="h-9 w-auto" />
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-ka-sand"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <nav className="flex flex-1 flex-col justify-center gap-1 px-8">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.path}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                >
+                  <Link
+                    to={link.path}
+                    className="block py-3 font-serif text-4xl text-ka-primary"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </nav>
+            <div className="flex flex-col gap-3 px-8 pb-10">
+              <a href="tel:3614948656" className="flex items-center gap-2 text-sm text-ka-muted">
+                <Phone className="h-4 w-4" />
+                (361) 494-8656
+              </a>
+              <Link to="/booking" className="btn-primary w-full justify-center" onClick={() => setMenuOpen(false)}>
+                Book Appointment
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
