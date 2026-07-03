@@ -11,7 +11,6 @@ const navLinks = [
   { name: "Contact", path: "/contact" },
 ];
 
-/** Solid header for inner pages (home uses integrated HeroHeader) */
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
