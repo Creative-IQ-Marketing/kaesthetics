@@ -1,17 +1,25 @@
-import React, { useState, useRef } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Copy,
   Check,
   ArrowRight,
+  ArrowLeft,
+  Clock,
+  MapPin,
 } from "lucide-react";
 import { serviceCategories, servicesData } from "../../data/services";
-import BookingCalendar from "../BookingCalendar";
-import ScrollReveal from "../motion/ScrollReveal";
+import SlotPicker from "../booking/SlotPicker";
+import ContactForm from "../booking/ContactForm";
+import { createBooking } from "../../services/bookingApi";
+import { STUDIO_ADDRESS } from "../../config/booking";
 import { EMAIL, PHONE_DISPLAY } from "../../seo/config";
 
-const MotionDiv = motion.div;
+const STEPS = [
+  { n: 1, label: "Service" },
+  { n: 2, label: "Date & Time" },
+  { n: 3, label: "Details" },
+];
 
 const categories = serviceCategories.map(({ id, label, icon: Icon }) => ({
   id,
@@ -19,580 +27,336 @@ const categories = serviceCategories.map(({ id, label, icon: Icon }) => ({
   icon: <Icon className="h-4 w-4" />,
 }));
 
-function parsePriceValue(raw) {
-  if (!raw) return null;
-  const match = String(raw).match(/[\d,.]+/);
-  if (!match) return null;
-  const value = Number(match[0].replace(/,/g, ""));
-  return Number.isFinite(value) ? value : null;
+function priceNum(raw) {
+  const m = String(raw || "").match(/[\d,.]+/);
+  return m ? Number(m[0].replace(/,/g, "")) : 0;
 }
 
-function getTotalDurationMinutes(services) {
-  return services.reduce((sum, s) => sum + (s.durationMinutes || 0), 0);
+function fmtDuration(mins) {
+  if (!mins) return null;
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m ? `${h}h ${m}m` : `${h}h`;
 }
 
-function formatDuration(minutes) {
-  if (!minutes) return null;
-  if (minutes < 60) return `${minutes} minutes`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m ? `${h} hr ${m} min` : `${h} hour${h > 1 ? "s" : ""}`;
+function fmtSlot(iso) {
+  return new Date(iso).toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
+
+const fade = { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } };
 
 const BookingFormSection = () => {
   const location = useLocation();
-  const summaryRef = useRef(null);
-  const [copied, setCopied] = useState(false);
 
-  const initialSelection = (() => {
-    const serviceName = location.state?.serviceName;
-    if (!serviceName) {
-      return { category: "skin-treatments", services: [] };
-    }
-
-    let foundCategory = "skin-treatments";
-    let foundService = null;
-
-    Object.entries(servicesData).forEach(([cat, services]) => {
-      const service = services.find((s) => s.title === serviceName);
-      if (service) {
-        foundCategory = cat;
-        foundService = service;
-      }
+  const initial = (() => {
+    const name = location.state?.serviceName;
+    if (!name) return { cat: "skin-treatments", svcs: [] };
+    let cat = "skin-treatments";
+    let svc = null;
+    Object.entries(servicesData).forEach(([c, list]) => {
+      const found = list.find((s) => s.title === name);
+      if (found) { cat = c; svc = found; }
     });
-
-    return {
-      category: foundCategory,
-      services: foundService ? [foundService] : [],
-    };
+    return { cat, svcs: svc ? [svc] : [] };
   })();
 
   const [step, setStep] = useState(1);
-  const [activeCategory, setActiveCategory] = useState(
-    initialSelection.category,
-  );
-  const [formData, setFormData] = useState({
-    services: initialSelection.services,
-  });
-  const [bookingComplete, setBookingComplete] = useState(false);
+  const [activeCat, setActiveCat] = useState(initial.cat);
+  const [selected, setSelected] = useState(initial.svcs);
+  const [slot, setSlot] = useState(null);
+  const [status, setStatus] = useState("idle");
+  const [bookError, setBookError] = useState(null);
 
-  const handleServiceSelect = (service) => {
-    setFormData((prev) => ({
-      ...prev,
-      services: prev.services.some((s) => s.title === service.title)
-        ? prev.services.filter((s) => s.title !== service.title)
-        : [...prev.services, service],
-    }));
-  };
-
-  const nextStep = () => {
-    setBookingComplete(false);
-    setStep((prev) => prev + 1);
-  };
-  const prevStep = () => {
-    setBookingComplete(false);
-    setStep((prev) => prev - 1);
-  };
-
-  const totalValue = formData.services.reduce((sum, s) => {
-    const v = parsePriceValue(s.price);
-    return v == null ? sum : sum + v;
-  }, 0);
-
-  const hasAnyPrice = formData.services.some(
-    (s) => parsePriceValue(s.price) != null,
-  );
-
-  const totalText = hasAnyPrice ? `$${Math.round(totalValue)}` : "—";
-  const totalDuration = getTotalDurationMinutes(formData.services);
-  const durationText = formatDuration(totalDuration);
-
-  const generateCopyText = () => {
-    const lines = [
-      "BOOKING SUMMARY",
-      "================",
-      "",
-      "Services Requested:",
-      ...formData.services.map((s) => {
-        const dur = s.durationMinutes ? ` (${s.durationMinutes} min)` : "";
-        return `• ${s.title} - ${s.price}${dur}`;
-      }),
-      "",
-      `Total Estimated: ${totalText}`,
-    ];
-
-    if (durationText) {
-      lines.push(`Total Appointment Duration: ${durationText}`);
-      lines.push(
-        "(Please ensure the calendar blocks this full duration — not 30 min.)",
-      );
-    }
-
-    lines.push(
-      "",
-      "Please confirm availability and let me know if you need any adjustments.",
+  const toggle = (svc) =>
+    setSelected((prev) =>
+      prev.some((s) => s.title === svc.title)
+        ? prev.filter((s) => s.title !== svc.title)
+        : [...prev, svc],
     );
 
-    return lines.join("\n");
-  };
+  const total = selected.reduce((s, v) => s + priceNum(v.price), 0);
+  const totalMins = selected.reduce((s, v) => s + (v.durationMinutes || 0), 0);
 
-  const servicesSummary = formData.services
-    .map((s) => s.title)
-    .join(", ");
-
-  const handleCopy = async () => {
+  const handleBook = async (contact) => {
+    setStatus("loading");
+    setBookError(null);
     try {
-      await navigator.clipboard.writeText(generateCopyText());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      const serviceList = selected
+        .map((s) => `${s.title} (${s.price})`)
+        .join(", ");
+      const noteLines = selected
+        .map((s) => `• ${s.title} – ${s.price}`)
+        .join("\n");
+      await createBooking({
+        ...contact,
+        startTime: slot,
+        durationMinutes: totalMins || 60,
+        notes: `${serviceList}\n\n${noteLines}\nTotal: $${total}`,
+      });
+      setStatus("done");
     } catch (err) {
-      console.error("Failed to copy:", err);
+      setBookError(err.message || "Something went wrong.");
+      setStatus("idle");
     }
   };
 
+  /* ── Confirmation ── */
+  if (status === "done") {
+    return (
+      <section className="section-pad bg-ka-cream">
+        <motion.div
+          {...fade}
+          className="mx-auto max-w-md text-center"
+        >
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+            <Check className="h-7 w-7 text-green-600" />
+          </div>
+          <h3 className="font-serif text-3xl text-ka-primary">
+            You're Booked!
+          </h3>
+          <p className="mt-3 text-sm text-ka-muted">
+            Confirmation is on its way to your email. Check spam if you
+            don't see it.
+          </p>
+          <div className="mx-auto mt-5 flex max-w-xs items-start gap-2.5 rounded-xl border border-ka-sand bg-white p-3.5 text-left text-sm text-ka-muted">
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-ka-accent" />
+            <span>{STUDIO_ADDRESS}</span>
+          </div>
+          <p className="mt-5 text-sm text-ka-muted">
+            Questions?{" "}
+            <a href="tel:3614948656" className="font-semibold text-ka-accent hover:underline">
+              {PHONE_DISPLAY}
+            </a>{" "}
+            ·{" "}
+            <a href={`mailto:${EMAIL}`} className="font-semibold text-ka-accent hover:underline">
+              {EMAIL}
+            </a>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setStatus("idle");
+              setSelected([]);
+              setSlot(null);
+              setStep(1);
+            }}
+            className="btn-secondary mt-6"
+          >
+            Book another
+          </button>
+        </motion.div>
+      </section>
+    );
+  }
+
+  /* ── Main flow ── */
   return (
     <section className="section-pad bg-ka-cream">
-      <div className="container-custom max-w-full">
-        <ScrollReveal className="mb-12 flex justify-center">
-          <div className="flex items-center gap-3">
-            {[
-              { n: 1, label: "Choose service" },
-              { n: 2, label: "Book time" },
-            ].map((s, i) => (
-              <React.Fragment key={s.n}>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${
-                      step >= s.n
+      <div className="container-custom max-w-3xl">
+        {/* Stepper */}
+        <div className="mb-10 flex items-center justify-center gap-3">
+          {STEPS.map((s, i) => (
+            <div key={s.n} className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition ${
+                    step > s.n
+                      ? "bg-green-500 text-white"
+                      : step === s.n
                         ? "bg-ka-primary text-white"
-                        : "border border-ka-sand bg-white text-ka-muted"
-                    }`}
-                  >
-                    {step > s.n ? <Check className="h-4 w-4" /> : s.n}
-                  </span>
-                  <span
-                    className={`hidden text-[10px] font-semibold uppercase tracking-[0.16em] sm:block ${
-                      step >= s.n ? "text-ka-primary" : "text-ka-muted"
-                    }`}
-                  >
-                    {s.label}
-                  </span>
-                </div>
-                {i === 0 && <span className="h-px w-8 bg-ka-sand sm:w-12" />}
-              </React.Fragment>
-            ))}
-          </div>
-        </ScrollReveal>
+                        : "border border-ka-sand text-ka-muted"
+                  }`}
+                >
+                  {step > s.n ? <Check className="h-3.5 w-3.5" /> : s.n}
+                </span>
+                <span
+                  className={`hidden text-[10px] font-semibold uppercase tracking-widest sm:block ${
+                    step >= s.n ? "text-ka-primary" : "text-ka-muted"
+                  }`}
+                >
+                  {s.label}
+                </span>
+              </div>
+              {i < 2 && <span className="h-px w-6 bg-ka-sand sm:w-10" />}
+            </div>
+          ))}
+        </div>
 
         <AnimatePresence mode="wait">
+          {/* ── Step 1: Service ── */}
           {step === 1 && (
-            <MotionDiv
-              key="step1"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-8"
-            >
-              <div className="mx-auto max-w-2xl text-center">
-                <div className="mb-4 flex items-center justify-center gap-4">
-                  <h2 className="font-serif text-4xl text-ka-primary md:text-5xl">
-                    Choose Your Service
-                  </h2>
-                  <AnimatePresence>
-                    {formData.services.length > 0 && (
-                      <motion.div
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        exit={{ scale: 0, rotate: 180 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 400,
-                          damping: 25,
-                        }}
-                        className="flex h-14 w-14 items-center justify-center rounded-full bg-ka-accent text-xl font-bold text-white shadow-lg ring-2 ring-ka-accent ring-offset-4"
-                      >
-                        {formData.services.length}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-                <p className="text-base text-ka-muted">
-                  Select one or more treatments. We&apos;ll generate a summary
-                  to paste into the booking form.
+            <motion.div key="s1" {...fade} className="space-y-6">
+              <div className="text-center">
+                <h2 className="font-serif text-3xl text-ka-primary">
+                  Choose Your Treatment
+                </h2>
+                <p className="mt-1.5 text-sm text-ka-muted">
+                  Select one or more services
                 </p>
               </div>
 
-              <div className="flex flex-wrap justify-center gap-3">
-                {categories.map((cat) => (
+              <div className="flex flex-wrap justify-center gap-2">
+                {categories.map((c) => (
                   <button
-                    key={cat.id}
+                    key={c.id}
                     type="button"
-                    onClick={() => setActiveCategory(cat.id)}
-                  className={`tab-pill ${
-                    activeCategory === cat.id ? "tab-pill-active" : "tab-pill-inactive"
-                  }`}
+                    onClick={() => setActiveCat(c.id)}
+                    className={`tab-pill ${activeCat === c.id ? "tab-pill-active" : "tab-pill-inactive"}`}
                   >
-                    {cat.icon}
-                    {cat.label}
+                    {c.icon}
+                    {c.label}
                   </button>
                 ))}
               </div>
 
-              <div className="mx-auto max-w-7xl">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {servicesData[activeCategory].map((service) => {
-                    const selected = formData.services.some(
-                      (s) => s.title === service.title,
-                    );
-                    return (
-                      <motion.button
-                        key={service.title}
-                        type="button"
-                        whileHover={{
-                          y: -4,
-                          boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-                        }}
-                        onClick={() => handleServiceSelect(service)}
-                        className={`group flex h-full cursor-pointer flex-col rounded-3xl border p-5 text-left transition-all duration-300 ${
-                          selected
-                            ? "border-ka-primary bg-ka-primary text-white shadow-soft"
-                            : "border-ka-sand bg-white text-ka-primary hover:border-ka-accent hover:shadow-card"
-                        }`}
-                      >
-                        <div className="flex-1">
-                          <h4
-                            className={`mb-2 font-serif text-lg leading-tight ${
-                              selected ? "text-white" : "text-ka-primary"
-                            }`}
-                          >
-                            {service.title}
-                          </h4>
-                          {service.sub && (
-                            <span
-                              className={`mb-3 block text-xs ${
-                                selected ? "text-white/60" : "text-ka-muted"
-                              }`}
-                            >
-                              {service.sub}
-                            </span>
-                          )}
-                          {service.durationMinutes && (
-                            <span
-                              className={`text-xs ${
-                                selected ? "text-white/70" : "text-ka-muted/70"
-                              }`}
-                            >
-                              ~{service.durationMinutes} min
-                            </span>
-                          )}
-                        </div>
-                        <span
-                          className={`text-lg font-bold ${
-                            selected ? "text-ka-accent" : "text-ka-primary"
-                          }`}
-                        >
-                          {service.price}
+              <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+                {servicesData[activeCat].map((svc) => {
+                  const on = selected.some((s) => s.title === svc.title);
+                  return (
+                    <button
+                      key={svc.title}
+                      type="button"
+                      onClick={() => toggle(svc)}
+                      className={`flex flex-col rounded-xl border p-3.5 text-left transition-all ${
+                        on
+                          ? "border-ka-primary bg-ka-primary text-white shadow-soft"
+                          : "border-ka-sand bg-white text-ka-primary hover:border-ka-accent"
+                      }`}
+                    >
+                      <span className={`font-serif text-sm leading-snug ${on ? "text-white" : ""}`}>
+                        {svc.title}
+                      </span>
+                      {svc.durationMinutes && (
+                        <span className={`mt-0.5 text-[11px] ${on ? "text-white/60" : "text-ka-muted"}`}>
+                          ~{svc.durationMinutes} min
                         </span>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mx-auto max-w-2xl rounded-2xl border border-ka-accent/15 bg-ka-accent/5 p-6">
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl">💡</span>
-                  <div className="flex-1">
-                    <h4 className="mb-1 font-semibold text-ka-primary">
-                      Pro Tip
-                    </h4>
-                    <p className="mb-3 text-sm text-ka-muted">
-                      Booking multiple services? Copy the summary so the full
-                      appointment length is noted — e.g. dermaplaning + facial
-                      needs more than 30 minutes.
-                    </p>
-                    <AnimatePresence>
-                      {formData.services.length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                          className="flex flex-wrap items-center gap-2 text-sm font-medium text-ka-accent"
-                        >
-                          <span className="text-lg">✓</span>
-                          {formData.services.length} service
-                          {formData.services.length !== 1 ? "s" : ""} selected
-                          <span className="text-lg">•</span>
-                          <span className="font-bold">{totalText}</span>
-                          {durationText && (
-                            <>
-                              <span className="text-lg">•</span>
-                              <span>{durationText}</span>
-                            </>
-                          )}
-                        </motion.div>
                       )}
-                    </AnimatePresence>
-                  </div>
-                </div>
+                      <span className={`mt-auto pt-2 text-sm font-bold ${on ? "text-ka-accent-light" : "text-ka-primary"}`}>
+                        {svc.price}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
-              <div className="flex justify-center">
-                <motion.button
-                  type="button"
-                  onClick={nextStep}
-                  disabled={formData.services.length === 0}
-                  whileHover={
-                    formData.services.length > 0 ? { scale: 1.05 } : {}
-                  }
-                  whileTap={formData.services.length > 0 ? { scale: 0.98 } : {}}
-                  className="btn-primary gap-2 px-8 py-4 text-base disabled:cursor-not-allowed disabled:opacity-50"
+              {selected.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col items-center gap-3"
                 >
-                  {formData.services.length > 0 ? (
-                    <>
-                      Continue with {formData.services.length} service
-                      {formData.services.length !== 1 ? "s" : ""}
-                      <ArrowRight className="h-5 w-5" />
-                    </>
-                  ) : (
-                    "Select a Service to Continue"
-                  )}
-                </motion.button>
-              </div>
-            </MotionDiv>
+                  <p className="flex items-center gap-2 text-sm font-medium text-ka-primary">
+                    <span>
+                      {selected.length} service{selected.length > 1 ? "s" : ""}
+                    </span>
+                    <span className="text-ka-sand">·</span>
+                    <span className="font-bold">${total}</span>
+                    {totalMins > 0 && (
+                      <>
+                        <span className="text-ka-sand">·</span>
+                        <Clock className="h-3.5 w-3.5" />
+                        <span>{fmtDuration(totalMins)}</span>
+                      </>
+                    )}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="btn-primary gap-2 px-8 py-3"
+                  >
+                    Pick a time <ArrowRight className="h-4 w-4" />
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
           )}
 
+          {/* ── Step 2: Date & Time ── */}
           {step === 2 && (
-            <MotionDiv
-              key="step2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-8"
-            >
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="mb-3 font-serif text-4xl text-ka-primary md:text-5xl">
-                  Complete Your Booking
+            <motion.div key="s2" {...fade} className="mx-auto max-w-xl space-y-6">
+              <div className="text-center">
+                <h2 className="font-serif text-3xl text-ka-primary">
+                  Pick a Date & Time
                 </h2>
-                <p className="text-base text-ka-muted">
-                  Pick a date &amp; time, then paste your summary into
-                  &ldquo;Additional Information&rdquo;
+                <p className="mt-1.5 text-sm text-ka-muted">
+                  {selected.map((s) => s.title).join(", ")}
                 </p>
               </div>
 
-              <div className="grid items-start gap-8 lg:grid-cols-3">
-                <div className="space-y-6 lg:col-span-1">
-                  <motion.div
-                    ref={summaryRef}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="rounded-2xl bg-ka-primary p-6 text-white shadow-xl"
-                  >
-                    <div className="mb-4">
-                      <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-white/70">
-                        Your Selection
-                      </span>
-                      <div className="flex items-baseline justify-between gap-3">
-                        <h3 className="font-serif text-xl">
-                          {formData.services.length === 1
-                            ? "Selected Service"
-                            : "Selected Services"}
-                        </h3>
-                        <span className="rounded-full bg-white/20 px-3 py-1 text-sm font-bold">
-                          {formData.services.length}
-                        </span>
-                      </div>
+              <SlotPicker selectedSlot={slot} onSelect={setSlot} />
+
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="btn-secondary gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" /> Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  disabled={!slot}
+                  className="btn-primary gap-2 px-8 py-3 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Continue <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Step 3: Details ── */}
+          {step === 3 && (
+            <motion.div key="s3" {...fade} className="mx-auto max-w-md space-y-6">
+              <div className="text-center">
+                <h2 className="font-serif text-3xl text-ka-primary">
+                  Your Details
+                </h2>
+              </div>
+
+              {/* Summary */}
+              <div className="rounded-xl border border-ka-sand bg-white p-4">
+                <div className="space-y-1.5">
+                  {selected.map((s) => (
+                    <div key={s.title} className="flex justify-between text-sm">
+                      <span className="text-ka-primary">{s.title}</span>
+                      <span className="font-bold text-ka-primary">{s.price}</span>
                     </div>
-
-                    <div className="mb-5 space-y-3 border-b border-white/20 pb-5">
-                      {formData.services.map((s) => (
-                        <div
-                          key={s.title}
-                          className="flex items-baseline justify-between gap-3"
-                        >
-                          <p className="font-serif text-base leading-tight">
-                            {s.title}
-                            {s.durationMinutes ? (
-                              <span className="ml-1 text-xs text-white/50">
-                                ({s.durationMinutes}m)
-                              </span>
-                            ) : null}
-                          </p>
-                          <span className="whitespace-nowrap text-sm font-bold text-ka-accent">
-                            {s.price}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="mb-5 space-y-2 border-b border-white/20 pb-5">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-xs font-bold uppercase tracking-wider text-white/70">
-                          Estimated Total
-                        </span>
-                        <span className="text-2xl font-bold text-ka-accent">
-                          {totalText}
-                        </span>
-                      </div>
-                      {durationText && (
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="text-xs font-bold uppercase tracking-wider text-white/70">
-                            Duration Needed
-                          </span>
-                          <span className="text-lg font-bold text-white">
-                            {durationText}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleCopy}
-                      className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-bold transition-all duration-300 ${
-                        copied
-                          ? "bg-green-500/30 text-green-100"
-                          : "bg-white/20 text-white hover:bg-white/30"
-                      }`}
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          Copied to Clipboard!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4" />
-                          Copy Summary
-                        </>
-                      )}
-                    </button>
-                  </motion.div>
-
-                  <div className="premium-card premium-card-pad">
-                    <h4 className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-ka-muted">
-                      Next Steps
-                    </h4>
-                    <ol className="space-y-4 text-sm text-ka-muted">
-                      <li className="flex gap-3">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ka-accent/20 text-xs font-bold text-ka-accent">
-                          1
-                        </span>
-                        <span>Select date &amp; time in the calendar →</span>
-                      </li>
-                      <li className="flex gap-3">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ka-accent/20 text-xs font-bold text-ka-accent">
-                          2
-                        </span>
-                        <span>
-                          Paste summary into &ldquo;Additional
-                          Information&rdquo;
-                        </span>
-                      </li>
-                      <li className="flex gap-3">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ka-accent/20 text-xs font-bold text-ka-accent">
-                          3
-                        </span>
-                        <span>Fill contact details &amp; confirm</span>
-                      </li>
-                    </ol>
-                  </div>
-
-                  <div className="rounded-2xl border border-ka-accent/20 bg-gradient-to-br from-ka-accent/10 to-ka-accent/5 p-5">
-                    <p className="text-sm leading-relaxed text-ka-muted">
-                      <strong className="text-ka-accent">After you book</strong>
-                      <br />
-                      You should receive a confirmation by email. Check spam if
-                      nothing arrives in a few minutes, or call{" "}
-                      <a
-                        href="tel:3614948656"
-                        className="font-bold text-ka-accent hover:underline"
-                      >
-                        {PHONE_DISPLAY}
-                      </a>
-                      .
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-gray-200 bg-white p-5">
-                    <p className="text-sm leading-relaxed text-ka-muted">
-                      <strong className="text-ka-primary">Form stuck?</strong>
-                      <br />
-                      Scroll inside the calendar panel to reach all fields.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="btn-secondary w-full"
-                  >
-                    ← Back to Services
-                  </button>
+                  ))}
                 </div>
-
-                <div className="overflow-visible lg:col-span-2">
-                  {bookingComplete ? (
-                    <motion.div
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="premium-card premium-card-pad text-center"
-                    >
-                      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                        <Check className="h-8 w-8 text-green-600" />
-                      </div>
-                      <h3 className="font-serif text-3xl text-ka-primary">
-                        You&apos;re Booked!
-                      </h3>
-                      <p className="mx-auto mt-4 max-w-md text-ka-muted">
-                        Your appointment is saved. A confirmation email should
-                        arrive shortly — please check your inbox and spam
-                        folder.
-                      </p>
-                      <p className="mx-auto mt-4 max-w-md text-sm text-ka-muted">
-                        Questions? Call or text{" "}
-                        <a
-                          href="tel:3614948656"
-                          className="font-semibold text-ka-accent hover:underline"
-                        >
-                          {PHONE_DISPLAY}
-                        </a>{" "}
-                        or email{" "}
-                        <a
-                          href={`mailto:${EMAIL}`}
-                          className="font-semibold text-ka-accent hover:underline"
-                        >
-                          {EMAIL}
-                        </a>
-                        .
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setBookingComplete(false)}
-                        className="btn-secondary mt-8"
-                      >
-                        Book another appointment
-                      </button>
-                    </motion.div>
-                  ) : (
-                    <>
-                      <div className="premium-card overflow-visible">
-                        <BookingCalendar
-                          servicesSummary={servicesSummary}
-                          onBookingComplete={() => setBookingComplete(true)}
-                        />
-                      </div>
-                      <p className="mt-3 text-center text-xs text-ka-muted">
-                        Secure online scheduling · scroll within the calendar if
-                        fields are below the fold
-                      </p>
-                    </>
-                  )}
+                <div className="mt-3 flex items-center justify-between border-t border-ka-sand pt-3 text-sm">
+                  <span className="flex items-center gap-1.5 text-ka-muted">
+                    <Clock className="h-3.5 w-3.5" />
+                    {slot && fmtSlot(slot)}
+                  </span>
+                  <span className="font-bold text-ka-primary">${total}</span>
                 </div>
               </div>
-            </MotionDiv>
+
+              {bookError && (
+                <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-center text-sm text-red-600">
+                  {bookError}
+                </p>
+              )}
+
+              <ContactForm onSubmit={handleBook} loading={status === "loading"} />
+
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="btn-secondary mx-auto flex gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" /> Change time
+              </button>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

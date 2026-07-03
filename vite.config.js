@@ -14,4 +14,13 @@ export default defineConfig({
       webp: { quality: 78 },
     }),
   ],
+  server: {
+    proxy: {
+      "/ghl": {
+        target: "https://services.leadconnectorhq.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ghl/, ""),
+      },
+    },
+  },
 });

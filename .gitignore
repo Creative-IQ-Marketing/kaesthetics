@@ -27,3 +27,6 @@ dist-ssr
 
 # Scrape files
 scrapes.txt
+
+# Local Netlify folder
+.netlify

@@ -1,5 +1,4 @@
 import React from "react";
-import { Clock } from "lucide-react";
 import BookingHero from "../components/sections/BookingHero";
 import BookingFormSection from "../components/sections/BookingFormSection";
 import SEO from "../components/SEO";
@@ -118,44 +117,28 @@ const Booking = () => {
       />
       <StructuredData schemas={schemas} />
       <BookingHero />
-      <section className="relative z-10 -mt-14 bg-ka-cream pb-4 md:-mt-20">
-        <div className="container-custom max-w-4xl">
-          <div className="premium-card overflow-hidden">
-            <div className="relative h-2 bg-gradient-to-r from-ka-accent via-ka-accent-light to-ka-accent/40" />
-            <div className="premium-card-pad">
-            <div className="mb-8 flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ka-pink text-ka-accent">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="section-label">Open Hours</p>
-                <h2 className="font-serif text-2xl text-ka-primary">When to Visit</h2>
-              </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              {[
-                { day: "Mon – Fri", time: "9am – 5pm" },
-                { day: "Saturday", time: "9am – 4pm" },
-                { day: "Sunday", time: "Closed" },
-              ].map((row) => (
-                <div key={row.day} className="stat-pill">
+      <section className="relative z-10 -mt-10 bg-ka-cream pb-2 md:-mt-16">
+        <div className="container-custom max-w-2xl">
+          <div className="flex items-center justify-center gap-6 rounded-xl border border-ka-sand bg-white/80 px-6 py-4 text-sm backdrop-blur-sm sm:gap-8">
+            {[
+              { day: "Mon – Fri", time: "9 – 5" },
+              { day: "Sat", time: "9 – 4" },
+              { day: "Sun", time: "Closed" },
+            ].map((row, i, arr) => (
+              <div key={row.day} className="flex items-center gap-6 sm:gap-8">
+                <div className="text-center">
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-ka-muted">
                     {row.day}
                   </p>
-                  <p className="mt-2 font-serif text-xl text-ka-primary">{row.time}</p>
+                  <p className="mt-0.5 font-serif text-base text-ka-primary">
+                    {row.time}
+                  </p>
                 </div>
-              ))}
-            </div>
-
-            <p className="mt-6 text-sm leading-relaxed text-ka-muted">
-              If you don't see an ideal time in the calendar, call us at{" "}
-              <a href="tel:3614948656" className="text-ka-accent hover:underline">
-                (361) 494-8656
-              </a>{" "}
-              and we'll help you get booked.
-            </p>
-            </div>
+                {i < arr.length - 1 && (
+                  <span className="h-8 w-px bg-ka-sand" />
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
