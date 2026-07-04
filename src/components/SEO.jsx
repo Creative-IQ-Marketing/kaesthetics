@@ -56,7 +56,6 @@ export default function SEO({
       // Dublin Core
       { name: "DC.title", content: title },
       { name: "DC.language", content: "en-US" },
-      // Page classification
       {
         name: "classification",
         content: "Health & Beauty, Skincare, Aesthetics",
