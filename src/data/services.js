@@ -50,7 +50,7 @@ export const servicesData = {
     },
     {
       title: "Astrodome Toning",
-      price: "$185",
+      price: "$195",
       description:
         "Utilizes pulsed light, near-infrared energy, and an oxygen mist to actively regenerate skin cells. Deeply cleanses pores while purifying and renewing the outer skin layer.",
     },

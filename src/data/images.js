@@ -9,6 +9,50 @@ import peonyFace from "../assets/optimized/peony-face.webp";
 import silkFabric from "../assets/optimized/silk-fabric.webp";
 import facialMist from "../assets/optimized/facial-mist.webp";
 import silkRibbon from "../assets/optimized/silk-ribbon.webp";
+import { servicesData } from "./services";
+
+function servicePrice(title) {
+  for (const list of Object.values(servicesData)) {
+    const svc = list.find((s) => s.title === title);
+    if (svc?.price) return svc.price;
+  }
+  return null;
+}
+
+const featuredMeta = [
+  {
+    title: "Customized Facial",
+    rating: 5,
+    reviews: 48,
+    image: guaShaFacial,
+    slug: "Customized Facial",
+    description: "A fully customized ritual tailored to your skin — the studio's signature experience.",
+  },
+  {
+    title: "Dermaplaning",
+    rating: 5,
+    reviews: 62,
+    image: dermaplaningShot,
+    slug: "Dermaplaning",
+    description: "Gentle blade exfoliation for instantly smoother, brighter skin.",
+  },
+  {
+    title: "Nano Infusion",
+    rating: 5,
+    reviews: 31,
+    image: facialMist,
+    slug: "Nano Infusion",
+    description: "Micro-pathway infusion for lighter, brighter, tighter-looking skin.",
+  },
+  {
+    title: "Astrodome Toning",
+    rating: 5,
+    reviews: 27,
+    image: facialSteam,
+    slug: "Astrodome Toning",
+    description: "LED dome therapy to calm, tone, and rejuvenate your complexion.",
+  },
+];
 
 /**
  * Each slot is assigned once per page context to avoid visual repetition.
@@ -40,44 +84,10 @@ export const images = {
     contact: driedFlowers,
   },
 
-  featured: [
-    {
-      title: "Customized Facial",
-      price: "$125",
-      rating: 5,
-      reviews: 48,
-      image: guaShaFacial,
-      slug: "Customized Facial",
-      description: "A fully customized ritual tailored to your skin — the studio's signature experience.",
-    },
-    {
-      title: "Dermaplaning",
-      price: "$85",
-      rating: 5,
-      reviews: 62,
-      image: dermaplaningShot,
-      slug: "Dermaplaning",
-      description: "Gentle blade exfoliation for instantly smoother, brighter skin.",
-    },
-    {
-      title: "Nano Infusion",
-      price: "$180",
-      rating: 5,
-      reviews: 31,
-      image: facialMist,
-      slug: "Nano Infusion",
-      description: "Micro-pathway infusion for lighter, brighter, tighter-looking skin.",
-    },
-    {
-      title: "Astrodome Toning",
-      price: "$185",
-      rating: 5,
-      reviews: 27,
-      image: facialSteam,
-      slug: "Astrodome Toning",
-      description: "LED dome therapy to calm, tone, and rejuvenate your complexion.",
-    },
-  ],
+  featured: featuredMeta.map((item) => ({
+    ...item,
+    price: servicePrice(item.title),
+  })),
 
   categories: [
     { id: "facials", label: "Facials", count: "8 treatments", path: "/services" },
