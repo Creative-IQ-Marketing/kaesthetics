@@ -1,16 +1,17 @@
-import React, { useEffect } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import MobileDock from "./components/layout/MobileDock";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
-import Contact from "./pages/Contact";
-import Services from "./pages/Services";
-import Booking from "./pages/Booking";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsConditions from "./pages/TermsConditions";
 import { initializeAnalytics, trackPageView } from "./services/analytics";
+
+const Contact = lazy(() => import("./pages/Contact"));
+const Services = lazy(() => import("./pages/Services"));
+const Booking = lazy(() => import("./pages/Booking"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsConditions = lazy(() => import("./pages/TermsConditions"));
 
 const HERO_ROUTES = ["/", "/services", "/booking", "/contact"];
 
@@ -34,14 +35,16 @@ function AppShell() {
     <div className="flex min-h-screen flex-col">
       {!HERO_ROUTES.includes(location.pathname) && <Header />}
       <main className={`flex-grow pb-[4.5rem] lg:pb-0`}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/booking" element={<Booking />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-conditions" element={<TermsConditions />} />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
+          </Routes>
+        </Suspense>
       </main>
       <Footer />
       <MobileDock />

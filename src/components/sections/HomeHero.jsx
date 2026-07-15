@@ -29,9 +29,15 @@ const HomeHero = () => {
     >
       <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
         <img
-          src={images.hero}
+          src="/hero.webp"
+          srcSet="/hero/hero-640.webp 640w, /hero/hero-960.webp 960w, /hero/hero-1280.webp 1280w"
+          sizes="100vw"
           alt="Dewy glowing skin — K-Aesthetic Skin San Antonio"
+          width={1280}
+          height={853}
+          loading="eager"
           fetchPriority="high"
+          decoding="async"
           className="h-full w-full object-cover object-[62%_center] sm:object-[58%_center] lg:object-[55%_center]"
         />
         <div className="hero-overlay-editorial" />
@@ -107,7 +113,7 @@ const HomeHero = () => {
                     <img
                       src={card.image}
                       alt=""
-                      loading="eager"
+                      loading="lazy"
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>

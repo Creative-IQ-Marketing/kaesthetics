@@ -10,28 +10,30 @@
       name="google-site-verification"
       content="JpOKi1swIDO3LvAxLSoeL0K9QzV9NLe4X0PljvllGNo"
     />
-    <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xel0m1gk1v");
-  </script>
 
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BQSMJK1P39"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-BQSMJK1P39');
-</script>
-    <script
-      src="https://analytics.ahrefs.com/analytics.js"
-      data-key="dI3UeOaNIFT471FOz71lHQ"
-      async
-    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="/hero/hero-960.webp"
+      imagesrcset="/hero/hero-640.webp 640w, /hero/hero-960.webp 960w, /hero/hero-1280.webp 1280w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+      />
+    </noscript>
 
     <!-- SEO Meta Tags -->
     <meta
@@ -143,10 +145,9 @@
     <link rel="alternate" hreflang="en" href="https://k-aesthetic.skin/" />
 
     <!-- Preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
+    <link rel="dns-prefetch" href="https://www.clarity.ms" />
 
     <!-- Inline Structured Data for static crawlers -->
     <script type="application/ld+json">
@@ -273,5 +274,39 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      window.addEventListener("load", function () {
+        (function (c, l, a, r, i, t, y) {
+          c[a] =
+            c[a] ||
+            function () {
+              (c[a].q = c[a].q || []).push(arguments);
+            };
+          t = l.createElement(r);
+          t.async = 1;
+          t.src = "https://www.clarity.ms/tag/" + i;
+          y = l.getElementsByTagName(r)[0];
+          y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "xel0m1gk1v");
+
+        var gtagScript = document.createElement("script");
+        gtagScript.async = true;
+        gtagScript.src =
+          "https://www.googletagmanager.com/gtag/js?id=G-BQSMJK1P39";
+        document.head.appendChild(gtagScript);
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
+        gtag("config", "G-BQSMJK1P39");
+
+        var ahrefs = document.createElement("script");
+        ahrefs.src = "https://analytics.ahrefs.com/analytics.js";
+        ahrefs.async = true;
+        ahrefs.setAttribute("data-key", "dI3UeOaNIFT471FOz71lHQ");
+        document.head.appendChild(ahrefs);
+      });
+    </script>
   </body>
 </html>
