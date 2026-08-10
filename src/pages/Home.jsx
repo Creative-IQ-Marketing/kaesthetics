@@ -1,11 +1,5 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import HomeHero from "../components/sections/HomeHero";
-import HomeServices from "../components/sections/HomeServices";
-import HomePromo from "../components/sections/HomePromo";
-import HomeAbout from "../components/sections/HomeAbout";
-import HomeTestimonials from "../components/sections/HomeTestimonials";
-import HomeBookCTA from "../components/sections/HomeBookCTA";
-import HomeInstagram from "../components/sections/HomeInstagram";
 import SEO from "../components/SEO";
 import StructuredData from "../components/StructuredData";
 import {
@@ -23,6 +17,13 @@ import {
   STREET_ADDRESS,
   getBaseUrl,
 } from "../seo/config";
+
+const HomeServices = lazy(() => import("../components/sections/HomeServices"));
+const HomePromo = lazy(() => import("../components/sections/HomePromo"));
+const HomeAbout = lazy(() => import("../components/sections/HomeAbout"));
+const HomeTestimonials = lazy(() => import("../components/sections/HomeTestimonials"));
+const HomeBookCTA = lazy(() => import("../components/sections/HomeBookCTA"));
+const HomeInstagram = lazy(() => import("../components/sections/HomeInstagram"));
 
 export default function Home() {
   const baseUrl = getBaseUrl();
@@ -149,12 +150,14 @@ export default function Home() {
       />
       <StructuredData schemas={schemas} />
       <HomeHero />
-      <HomeServices />
-      <HomePromo />
-      <HomeAbout />
-      <HomeTestimonials />
-      <HomeBookCTA />
-      <HomeInstagram />
+      <Suspense fallback={null}>
+        <HomeServices />
+        <HomePromo />
+        <HomeAbout />
+        <HomeTestimonials />
+        <HomeBookCTA />
+        <HomeInstagram />
+      </Suspense>
     </div>
   );
 }

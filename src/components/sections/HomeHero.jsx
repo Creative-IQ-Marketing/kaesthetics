@@ -2,13 +2,13 @@ import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import HeroHeader from "../layout/HeroHeader";
-import { images } from "../../data/images";
+import { navImages } from "../../data/images/nav";
 
 const heroNavCards = [
-  { tag: "Services", title: "Curated treatments", image: images.nav.services, to: "/services" },
-  { tag: "Booking", title: "Reserve your glow", image: images.nav.booking, to: "/booking" },
-  { tag: "Studio", title: "Meet Kassandra", image: images.nav.studio, to: "/contact" },
-  { tag: "Contact", title: "Get in touch", image: images.nav.contact, to: "/contact" },
+  { tag: "Services", title: "Curated treatments", image: navImages.services, to: "/services" },
+  { tag: "Booking", title: "Reserve your glow", image: navImages.booking, to: "/booking" },
+  { tag: "Studio", title: "Meet Kassandra", image: navImages.studio, to: "/contact" },
+  { tag: "Contact", title: "Get in touch", image: navImages.contact, to: "/contact" },
 ];
 
 const HomeHero = () => {
@@ -18,8 +18,6 @@ const HomeHero = () => {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const imgY = useTransform(scrollYProgress, [0, 1], reduceMotion ? ["0%", "0%"] : ["0%", "18%"]);
-  const imgScale = useTransform(scrollYProgress, [0, 1], reduceMotion ? [1, 1] : [1, 1.08]);
   const contentY = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [0, 56]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduceMotion ? 1 : 0]);
 
@@ -28,7 +26,7 @@ const HomeHero = () => {
       ref={ref}
       className="relative min-h-[92svh] w-full overflow-hidden pb-24 md:min-h-[100svh] md:pb-28"
     >
-      <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
+      <div className="absolute inset-0">
         <img
           src="/hero.webp"
           srcSet="/hero/hero-640.webp 640w, /hero/hero-960.webp 960w, /hero/hero-1280.webp 1280w"
@@ -42,7 +40,7 @@ const HomeHero = () => {
           className="h-full w-full object-cover object-[62%_center] sm:object-[58%_center] lg:object-[55%_center]"
         />
         <div className="hero-overlay-editorial" />
-      </motion.div>
+      </div>
 
       <HeroHeader light />
 

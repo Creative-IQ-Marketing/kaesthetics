@@ -136,13 +136,25 @@ export default function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-[11px] text-white/35 md:flex-row">
           <p>&copy; {new Date().getFullYear()} K-Aesthetic Skin. All rights reserved.</p>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             <Link to="/privacy-policy" className="hover:text-white/70">
               Privacy
             </Link>
             <Link to="/terms-conditions" className="hover:text-white/70">
               Terms
             </Link>
+            <a
+              href="https://creativeiqmarketing.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-1 uppercase tracking-wider transition-colors hover:text-white/70"
+            >
+              Powered by{" "}
+              <span className="font-semibold text-white/45 group-hover:text-white/80">
+                Creative IQ
+              </span>
+              <ArrowUpRight className="h-3 w-3 -translate-y-px transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
           </div>
         </div>
       </div>
