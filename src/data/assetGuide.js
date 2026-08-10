@@ -1,13 +1,12 @@
 /**
- * Image asset guide — Pinterest search terms & where to save files.
+ * Image asset guide — generated + curated sources.
  *
- * HOW TO USE:
- * 1. Search Pinterest using the terms below (add "beige aesthetic" or "warm tones")
- * 2. Save as JPG/WebP into src/assets/<folder>/<filename>
- * 3. Import in src/data/images.js and swap the URL
+ * Current production map lives in src/data/images.js (unique slot per placement).
+ * New photos: drop PNG/JPG into src/assets/generated/, add a slot in
+ * scripts/optimize-images.mjs, run `npm run optimize-images`, then wire in images.js.
  *
- * TIP: Prefer images with warm/neutral tones, soft light, no harsh filters.
- * Avoid stock photos with visible watermarks or competitor logos.
+ * Home LCP hero is public/hero.webp (+ /hero/srcset) — do not replace casually.
+ * Tip: warm honey / soft rose grade, soft light, no competitor logos or watermarks.
  */
 
 export const assetSlots = [

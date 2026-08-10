@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import HeroHeader from "../layout/HeroHeader";
 import { images } from "../../data/images";
 
@@ -13,19 +13,20 @@ const heroNavCards = [
 
 const HomeHero = () => {
   const ref = useRef(null);
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const imgY = useTransform(scrollYProgress, [0, 1], reduceMotion ? ["0%", "0%"] : ["0%", "18%"]);
+  const imgScale = useTransform(scrollYProgress, [0, 1], reduceMotion ? [1, 1] : [1, 1.08]);
+  const contentY = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [0, 56]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduceMotion ? 1 : 0]);
 
   return (
     <section
       ref={ref}
-      className="relative min-h-[100svh] w-full overflow-hidden pb-28 md:pb-36"
+      className="relative min-h-[92svh] w-full overflow-hidden pb-24 md:min-h-[100svh] md:pb-28"
     >
       <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale }}>
         <img
@@ -47,7 +48,7 @@ const HomeHero = () => {
 
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
-        className="container-wide relative z-10 flex min-h-[100svh] flex-col px-5 pt-28 sm:px-8 lg:px-12 lg:pt-32"
+        className="container-wide relative z-10 flex min-h-[92svh] flex-col px-5 pt-24 sm:px-8 md:min-h-[100svh] lg:px-12 lg:pt-28"
       >
         <div className="flex flex-1 flex-col justify-center lg:max-w-[52%]">
           <motion.p

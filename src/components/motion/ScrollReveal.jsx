@@ -1,14 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const spring = { type: "spring", stiffness: 55, damping: 18, mass: 1.1 };
+const spring = { type: "spring", stiffness: 70, damping: 20, mass: 0.95 };
 
 const directionOffset = {
-  up: { x: 0, y: 36 },
-  down: { x: 0, y: -36 },
-  left: { x: -48, y: 24 },
-  right: { x: 48, y: 24 },
-  scale: { x: 0, y: 20, scale: 0.92 },
+  up: { x: 0, y: 28 },
+  down: { x: 0, y: -28 },
+  left: { x: -36, y: 16 },
+  right: { x: 36, y: 16 },
+  scale: { x: 0, y: 16, scale: 0.96 },
 };
 
 export default function ScrollReveal({

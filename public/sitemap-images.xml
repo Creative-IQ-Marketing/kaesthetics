@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://k-aesthetic.skin/</loc>
+    <image:image>
+      <image:loc>https://k-aesthetic.skin/kalogo.png</image:loc>
+      <image:title>K-Aesthetic Skin</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://k-aesthetic.skin/hero/hero-960.webp</image:loc>
+      <image:title>K-Aesthetic Skin facial treatments in San Antonio</image:title>
+    </image:image>
+  </url>
+</urlset>

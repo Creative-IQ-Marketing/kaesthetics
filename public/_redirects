@@ -1,2 +1,13 @@
 /ghl/*  https://services.leadconnectorhq.com/:splat  200
-/*      /index.html  200
+
+/services/          /services           301
+/booking/           /booking            301
+/contact/           /contact            301
+/privacy-policy/    /privacy-policy     301
+/terms-conditions/  /terms-conditions   301
+
+/services           /services/index.html           200
+/booking            /booking/index.html            200
+/contact            /contact/index.html            200
+/privacy-policy     /privacy-policy/index.html     200
+/terms-conditions   /terms-conditions/index.html   200

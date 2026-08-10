@@ -6,7 +6,9 @@
   "scripts": {
     "optimize-images": "node scripts/optimize-images.mjs",
     "dev": "vite",
-    "build": "npm run optimize-images && vite build",
+    "prebuild": "node scripts/generate-seo-files.mjs",
+    "build": "npm run optimize-images && vite build && node scripts/prerender-routes.mjs",
+    "seo:generate": "node scripts/generate-seo-files.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

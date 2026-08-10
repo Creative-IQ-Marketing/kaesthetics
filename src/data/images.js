@@ -6,9 +6,23 @@ import guaShaFacial from "../assets/optimized/gua-sha.webp";
 import glowingSkin from "../assets/optimized/glowing-skin.webp";
 import driedFlowers from "../assets/optimized/dried-flowers.webp";
 import peonyFace from "../assets/optimized/peony-face.webp";
-import silkFabric from "../assets/optimized/silk-fabric.webp";
-import facialMist from "../assets/optimized/facial-mist.webp";
-import silkRibbon from "../assets/optimized/silk-ribbon.webp";
+
+import servicesHero from "../assets/optimized/services-hero.webp";
+import bookingHero from "../assets/optimized/booking-hero.webp";
+import contactHero from "../assets/optimized/contact-hero.webp";
+import bookCta from "../assets/optimized/book-cta.webp";
+import spaRoom from "../assets/optimized/spa-room.webp";
+import productsFlatlay from "../assets/optimized/products-flatlay.webp";
+import aboutAccent from "../assets/optimized/about-accent.webp";
+import featuredFacial from "../assets/optimized/featured-facial.webp";
+import featuredNano from "../assets/optimized/featured-nano.webp";
+import featuredLed from "../assets/optimized/featured-led.webp";
+import promoGlow from "../assets/optimized/promo-glow.webp";
+import navServices from "../assets/optimized/nav-services.webp";
+import navBooking from "../assets/optimized/nav-booking.webp";
+import navStudio from "../assets/optimized/nav-studio.webp";
+import navContact from "../assets/optimized/nav-contact.webp";
+
 import { servicesData } from "./services";
 
 function servicePrice(title) {
@@ -24,7 +38,7 @@ const featuredMeta = [
     title: "Customized Facial",
     rating: 5,
     reviews: 48,
-    image: guaShaFacial,
+    image: featuredFacial,
     slug: "Customized Facial",
     description: "A fully customized ritual tailored to your skin — the studio's signature experience.",
   },
@@ -40,7 +54,7 @@ const featuredMeta = [
     title: "Nano Infusion",
     rating: 5,
     reviews: 31,
-    image: facialMist,
+    image: featuredNano,
     slug: "Nano Infusion",
     description: "Micro-pathway infusion for lighter, brighter, tighter-looking skin.",
   },
@@ -48,40 +62,40 @@ const featuredMeta = [
     title: "Astrodome Toning",
     rating: 5,
     reviews: 27,
-    image: facialSteam,
+    image: featuredLed,
     slug: "Astrodome Toning",
     description: "LED dome therapy to calm, tone, and rejuvenate your complexion.",
   },
 ];
 
 /**
- * Each slot is assigned once per page context to avoid visual repetition.
- * Homepage treatments = featured only. Services page = text menu. Booking = silkRibbon hero.
+ * Unique asset per visual slot — no cross-section repeats.
+ * Home LCP hero stays on public/hero.webp (+ srcset); heroLocal is for OG/meta only.
  */
 export const images = {
   hero: heroLocal,
 
-  servicesHero: peonyFace,
-  bookingHero: silkRibbon,
-  contactHero: driedFlowers,
+  servicesHero,
+  bookingHero,
+  contactHero,
 
   about: peonyFace,
-  aboutAccent: silkFabric,
-  promo: glowingSkin,
-  bookCta: driedFlowers,
-  spaRoom: silkFabric,
+  aboutAccent,
+  promo: promoGlow,
+  bookCta,
+  spaRoom,
 
   facial: guaShaFacial,
   glowingSkin,
-  products: silkFabric,
-  gallery: [guaShaFacial, dermaplaningShot, facialSteam, glowingSkin],
+  products: productsFlatlay,
+  gallery: [guaShaFacial, facialSteam, productsFlatlay, glowingSkin],
   relaxation: driedFlowers,
 
   nav: {
-    services: facialMist,
-    booking: silkRibbon,
-    studio: peonyFace,
-    contact: driedFlowers,
+    services: navServices,
+    booking: navBooking,
+    studio: navStudio,
+    contact: navContact,
   },
 
   featured: featuredMeta.map((item) => ({
